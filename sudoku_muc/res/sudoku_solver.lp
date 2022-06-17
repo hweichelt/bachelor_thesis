@@ -1,6 +1,9 @@
+% ########### SUDOKU SOLVER ###########
+
 % GENERATING
 
 number(1..9).
+
 % Transfer initial values to solution
 solution(X,Y,V) :- initial(X,Y,V).
 % Generate solution Values
