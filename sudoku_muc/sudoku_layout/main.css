@@ -1,0 +1,67 @@
+:root {
+    /* LIGHT THEME */
+    /*
+    --background-color-light: #80DEEA;
+    --background-color-dark: #00BCD4;
+    --font-color-initial: #3D2B56;
+    --font-color-normal: #3D2B56;
+    */
+
+    /* DARK THEME */
+    --background-color-light: #37474F;
+    --background-color-dark: #263238;
+    --background-odd-cage: #37474F;
+    --font-color-initial: #7FC6A4;
+    --font-color-normal: #D6F8D6;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    font-family: "Roboto";
+}
+
+.sudoku{
+    padding: 1rem;
+    background: var(--background-color-dark);
+    background: linear-gradient(0deg, var(--background-color-dark) 0%, var(--background-color-light) 100%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sudoku .inner{
+    border: solid 0.01rem #000;
+    display: grid;
+    width: calc((3*3 + 0.5) * 2rem);
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.sudoku .cage{
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.sudoku .cage:nth-child(2n){
+    background: var(--background-odd-cage);
+}
+
+.sudoku .cage .cell{
+    margin: 0;
+    padding: 0;
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    border: solid 0.01rem #000;
+    color: var(--font-color-normal);
+}
+
+.sudoku .cage .cell.initial{
+    font-weight: bold;
+    color: var(--font-color-initial);
+}
