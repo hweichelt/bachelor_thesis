@@ -3,6 +3,7 @@ import time
 
 import clingo
 from minimal_unsatisfiable_core import Util, MUC
+from tests import clingraph_factbase_computation
 
 from clingraph.orm import Factbase
 from clingraph.graphviz import compute_graphs, render
@@ -34,7 +35,6 @@ def muc_sudoku():
     visualization = "res/visualization/visualize_sudoku.lp"
 
     print("T0 : SOLVING START")
-    # TODO : cannot use the solve handle outside the function. Is this bc of async/parallel programming?
     (satisfiable, model_string, core) = Util.solve(
         program=program,
         instance=instance,
@@ -46,7 +46,7 @@ def muc_sudoku():
     print("core : ", core)
 
     if satisfiable:
-        Util.render_sudoku(model_string, visualization_file=visualization)
+        Util.render_sudoku(program=program, instance=instance, visualization=visualization, assumptions=assumption_list)
 
     print("T0 : SOLVING END")
     print("T1 : FINDING MUC START")
@@ -66,8 +66,15 @@ def muc_sudoku():
 
     # TODO : what do the ints in the uc mean ???
 
+    # TODO : clingraph in python using the clingraph context with clingo
+    # TODO : remove these model strings and instead use maybe these symbolic_atoms
+    # TODO : interpret the uc with first creating a dict that associates the assumptions with their int index in the
+    #  symbolic atoms so we are able to backtrack the uc to their associated assumption
+    # TODO : Look at propagator
+
 
 if __name__ == '__main__':
     # example_clingraph()
     muc_sudoku()
+    # clingraph_factbase_computation()
 

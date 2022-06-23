@@ -1,14 +1,18 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%% Visualization
+% based on the example at : https://github.com/potassco/clingraph/blob/master/examples/sudoku/viz.lp
 
-#const dim = 3.
+#const cage_size = 3.
 
-val(1..dim*dim).
-pos(X,Y) :- val(X), val(Y).
+% Convert solution to sudoku
+sudoku(X,Y,N) :- visualize_sudoku(X,Y,N).
+initial(X,Y,N) :- visualize_initial(X,Y,N).
 
-sudoku(X,Y,N) :- solution(X,Y,N).
+% Generate pos
+size(1..cage_size*cage_size).
+pos(X,Y) :- size(X), size(Y).
 
 % Generate subgrid
-subgrid(X,Y,(((X-1)/dim)*dim+((Y-1)/dim))) :- pos(X,Y).
+subgrid(X,Y,(((X-1)/cage_size)*cage_size+((Y-1)/cage_size))) :- pos(X,Y).
 
 viz_graph(sudoku).
 
@@ -35,15 +39,15 @@ viz_attr(graph_nodes, sudoku, fontname, "JetBrains Mono").
 viz_node(pos(X,Y), sudoku):- pos(X,Y).
 viz_attr(node, pos(X,Y), fillcolor, transparent):- pos(X,Y), subgrid(X,Y,S), S\2==0.
 
+
+
 viz_attr(node, pos(X,Y), label, V):- sudoku(X,Y,V), not initial(X,Y,_).
 viz_attr(node, pos(X,Y), (label,0), "<<B>"):- sudoku(X,Y,V), initial(X,Y,_).
 viz_attr(node, pos(X,Y), (label,1), V):- sudoku(X,Y,V), initial(X,Y,_).
 viz_attr(node, pos(X,Y), (label,2), "</B>>"):- sudoku(X,Y,V), initial(X,Y,_).
 viz_attr(node, pos(X,Y), fontcolor, "#D6F8D6"):- sudoku(X,Y,V), not initial(X,Y,_).
 viz_attr(node, pos(X,Y), fontcolor, "#7FC6A4"):- sudoku(X,Y,V), initial(X,Y,_).
-
-% Invert the Y-Axis when displaying the sudoku instance
-viz_attr(node, pos(X,Y), pos, @pos(X,10-Y)):- pos(X,Y).
+viz_attr(node, pos(X,Y), pos, @pos(X,Y)):- pos(X,Y).
 
 % Allow display of Empty cells
 viz_attr(node, pos(X,Y), label, " "):- not sudoku(X,Y,_), pos(X,Y).

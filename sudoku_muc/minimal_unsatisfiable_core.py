@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import clingo
 from clingraph.orm import Factbase
 from clingraph.graphviz import compute_graphs, render
+from clingraph.clingo_utils import ClingraphContext
 
 
 class Util(ABC):
@@ -16,6 +17,7 @@ class Util(ABC):
 
     @staticmethod
     def solve(program, instance, assumption_list=None):
+
         ctl = clingo.Control()
 
         program_string = Util.get_file_content_str(program)
@@ -36,28 +38,35 @@ class Util(ABC):
         return satisfiable, model_string, core
 
     @staticmethod
-    def render_sudoku(model_string, visualization_file):
-        # TODO : Remove os.system call
-        print("GENERATING CLINGRAPH FACTBASE VIA OS.SYSTEM : REMOVE!")
-        # Write the found model to res/models/temp_model.lp
-        with open("res/models/temp_model.lp", "w") as f:
-            f.write(".\n".join(model_string.split()) + ".")
-        os.system(
-            f"clingo res/models/temp_model.lp -n 0 --outf=2 | clingraph --view --out=facts --prefix=viz_ "
-            f"--default-graph=sudoku --viz-encoding={visualization_file} > res/factbases/factbase.lp "
-        )
-        print("CLINGRAPH FACTBASE GENERATED")
-
+    def render_sudoku(program, instance, visualization, assumptions=None):
+        ctl = clingo.Control()
         fb = Factbase(prefix="viz_", default_graph="sudoku")
-        fb.add_fact_file("res/factbases/factbase.lp")
 
-        # TODO : Use the internal function from model somehow
-        # fb = Factbase.from_model(solve_handle.model(), prefix="viz_")
-        # print(type(fb), fb)
+        print(program, instance, visualization)
 
-        graphs = compute_graphs(fb)
+        program_string = Util.get_file_content_str(program)
+        instance_string = Util.get_file_content_str(instance)
+        visualization_string = Util.get_file_content_str(visualization)
 
-        render(graphs, format="png", view=True, engine="neato")
+        ctl.add("base", [], program_string)
+        ctl.add("base", [], instance_string)
+        ctl.add("base", [], visualization_string)
+
+        ctl.ground([("base", [])], ClingraphContext())
+
+        if assumptions is not None:
+            print("ASSUMPTIONS")
+            solve_handle = ctl.solve(assumptions=assumptions, yield_=True)
+        else:
+            print("NO-ASSUMPTIONS")
+            solve_handle = ctl.solve(yield_=True)
+
+        if solve_handle.get().satisfiable:
+            fb.add_model(solve_handle.model())
+            graphs = compute_graphs(fb)
+            render(graphs, format="png", view=True, engine="neato")
+        else:
+            print("WARNING: cannot render sudoku. Instance is unsatisfiable")
 
 
 class MUC(ABC):
