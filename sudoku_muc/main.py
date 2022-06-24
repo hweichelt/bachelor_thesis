@@ -1,12 +1,5 @@
-import os
-import time
-
 import clingo
 from minimal_unsatisfiable_core import Util, Container
-from tests import clingraph_factbase_computation
-
-from clingraph.orm import Factbase
-from clingraph.graphviz import compute_graphs, render
 
 
 def muc_sudoku():
@@ -58,10 +51,6 @@ def muc_sudoku():
     else:
         print(f"MUC : {muc}")
 
-    # TODO : clingraph in python using the clingraph context with clingo
-    # TODO : remove these model strings and instead use maybe these symbolic_atoms
-    # TODO : interpret the uc with first creating a dict that associates the assumptions with their int index in the
-    #  symbolic atoms so we are able to backtrack the uc to their associated assumption
     # TODO : Look at propagator
 
 
