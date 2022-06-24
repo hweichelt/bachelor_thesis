@@ -43,32 +43,6 @@ class Util(ABC):
             print("WARNING: cannot render sudoku. Instance is unsatisfiable")
 
 
-class MUC(ABC):
-
-    @staticmethod
-    def muc_iterative_deletion(program, instance, assumption_list=None):
-        # TODO : This algorithm is not using the core but the assumption list. Maye there is a way to use the core
-        original_problem_unsatisfiable = False
-        (satisfiable, model_string, core) = Util.solve(
-            program=program,
-            instance=instance,
-            assumption_list=assumption_list
-        )
-
-        if satisfiable:
-            return original_problem_unsatisfiable, None
-        else:
-            original_problem_unsatisfiable = True
-            minimal_core = []
-            for i, assumption in enumerate(assumption_list):
-                partial_assumption_list = [a for a in assumption_list if a != assumption]
-                (sat, _, _) = Util.solve(program=program, instance=instance, assumption_list=partial_assumption_list)
-                if sat:
-                    minimal_core.append(assumption)
-
-            return original_problem_unsatisfiable, minimal_core
-
-
 class Container:
 
     def __init__(self, program, instance, assumptions=None):

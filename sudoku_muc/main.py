@@ -2,7 +2,7 @@ import os
 import time
 
 import clingo
-from minimal_unsatisfiable_core import Util, MUC, Container
+from minimal_unsatisfiable_core import Util, Container
 from tests import clingraph_factbase_computation
 
 from clingraph.orm import Factbase
