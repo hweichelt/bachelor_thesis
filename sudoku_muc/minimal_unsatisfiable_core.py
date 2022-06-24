@@ -16,50 +16,24 @@ class Util(ABC):
         return out
 
     @staticmethod
-    def solve(program, instance, assumption_list=None):
-
-        ctl = clingo.Control()
-
-        program_string = Util.get_file_content_str(program)
-        instance_string = Util.get_file_content_str(instance)
-
-        ctl.add("base", [], program_string)
-        ctl.add("base", [], instance_string)
-
-        ctl.ground([("base", [])])
-
-        assumptions = assumption_list if assumption_list is not None else []
-        solve_handle = ctl.solve(assumptions=assumptions, yield_=True)
-
-        satisfiable = solve_handle.get().satisfiable
-        model_string = str(solve_handle.model()) if solve_handle.model() is not None else ""
-        core = solve_handle.core()
-
-        return satisfiable, model_string, core
-
-    @staticmethod
-    def render_sudoku(program, instance, visualization, assumptions=None):
+    def render_sudoku(symbol_list, visualization_file):
         ctl = clingo.Control()
         fb = Factbase(prefix="viz_", default_graph="sudoku")
 
-        print(program, instance, visualization)
+        program_string = ". ".join([str(symbol) for symbol in symbol_list])
+        if program_string:
+            program_string += "."
 
-        program_string = Util.get_file_content_str(program)
-        instance_string = Util.get_file_content_str(instance)
-        visualization_string = Util.get_file_content_str(visualization)
+        print(program_string)
+
+        visualization_string = Util.get_file_content_str(visualization_file)
 
         ctl.add("base", [], program_string)
-        ctl.add("base", [], instance_string)
         ctl.add("base", [], visualization_string)
 
         ctl.ground([("base", [])], ClingraphContext())
 
-        if assumptions is not None:
-            print("ASSUMPTIONS")
-            solve_handle = ctl.solve(assumptions=assumptions, yield_=True)
-        else:
-            print("NO-ASSUMPTIONS")
-            solve_handle = ctl.solve(yield_=True)
+        solve_handle = ctl.solve(yield_=True)
 
         if solve_handle.get().satisfiable:
             fb.add_model(solve_handle.model())
@@ -93,3 +67,71 @@ class MUC(ABC):
                     minimal_core.append(assumption)
 
             return original_problem_unsatisfiable, minimal_core
+
+
+class Container:
+
+    def __init__(self, program, instance, assumptions=None):
+        if assumptions is None:
+            assumptions = []
+
+        self.control = clingo.Control()
+        self.program = program
+        self.instance = instance
+        self.assumptions = assumptions
+
+        program_string = Util.get_file_content_str(program)
+        instance_string = Util.get_file_content_str(instance)
+
+        self.control.add("base", [], program_string)
+        self.control.add("base", [], instance_string)
+
+        self.control.ground([("base", [])])
+
+        self.assumptions_lookup = {}
+        if self.assumptions:
+            self.assumptions_lookup = {self.control.symbolic_atoms[assumption].literal: assumption for assumption in self.assumptions}
+
+    def solve(self, different_assumptions=None):
+        shown_atoms = ["solution", "initial", "guess"]
+
+        if different_assumptions is not None:
+            assumptions_prep = [(assumption, True) for assumption in different_assumptions]
+        else:
+            assumptions_prep = [(assumption, True) for assumption in self.assumptions]
+
+        with self.control.solve(assumptions=assumptions_prep, yield_=True) as solve_handle:
+            satisfiable = solve_handle.get().satisfiable
+            if solve_handle.model() is not None:
+                model = [atom for atom in solve_handle.model().symbols(atoms=True) if atom.name in shown_atoms]
+            else:
+                model = []
+            core = [self.assumptions_lookup[index] for index in solve_handle.core()]
+        return satisfiable, model, core
+
+    def get_muc_iterative_deletion(self):
+        print("MUC ITERATIVE DELETION")
+        satisfiable, _, core = self.solve()
+        muc_found = False
+        if satisfiable:
+            return muc_found, []
+
+        minimal_unsatisfiable_core = []
+        for index, assumption in enumerate(core):
+            partial_assumptions = [a for a in core if a != assumption]
+            sat, _, _ = self.solve(different_assumptions=partial_assumptions)
+            if sat:
+                minimal_unsatisfiable_core.append(assumption)
+
+        return True, minimal_unsatisfiable_core
+
+    def __str__(self):
+        out = repr(self) + "\n"
+        out += "\t<assumptions>\n"
+        for index, assumption in self.assumptions_lookup.items():
+            out += f"\t\t{index} : {assumption}\n"
+        out += "\t</assumptions>\n"
+        return out + f"</{self.__class__.__name__}>"
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} program={self.program} instance={self.instance}>"
