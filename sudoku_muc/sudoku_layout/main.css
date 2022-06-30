@@ -13,6 +13,7 @@
     --background-odd-cage: #37474F;
     --font-color-initial: #7FC6A4;
     --font-color-normal: #D6F8D6;
+    --color-warning: #A71D31;
 }
 
 body{
@@ -64,4 +65,9 @@ body{
 .sudoku .cage .cell.initial{
     font-weight: bold;
     color: var(--font-color-initial);
+}
+
+.sudoku .cage .cell.core{
+    background: var(--color-warning);
+    color: #fff;
 }
