@@ -73,7 +73,9 @@ class Container:
         with self.control.solve(assumptions=assumptions_prep, yield_=True) as solve_handle:
             satisfiable = solve_handle.get().satisfiable
             if solve_handle.model() is not None:
-                model = [atom for atom in solve_handle.model().symbols(atoms=True) if atom.name in shown_atoms]
+                # filter out all atoms from the model that are not in shown_atoms
+                model = [atom for atom in solve_handle.model().symbols(atoms=True) if
+                         any([atom.match(signature, 3, True) for signature in shown_atoms])]
             else:
                 model = []
             core = [self.assumptions_lookup[index] for index in solve_handle.core()]
