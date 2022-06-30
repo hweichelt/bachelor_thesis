@@ -116,6 +116,14 @@ class Container:
 
         return unsatisfiable_cores
 
+    def get_minimum_ucs_brute_force(self):
+        # this algorithm just implements the brute force algorithm for all ucs (get_uc_all_brute_force()) and finds the
+        # smallest core within the set of ucs that is returned
+
+        unsatisfiable_cores = self.get_uc_all_brute_force()
+        minimum = min(unsatisfiable_cores, key=lambda x: len(x))
+        return [uc for uc in unsatisfiable_cores if len(uc) == len(minimum)]
+
     def __str__(self):
         out = repr(self) + "\n"
         out += "\t<assumptions>\n"
