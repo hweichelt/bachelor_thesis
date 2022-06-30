@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from itertools import chain, combinations
 
 import clingo
 from clingraph.orm import Factbase
@@ -97,7 +98,25 @@ class Container:
             if sat:
                 minimal_unsatisfiable_core.append(assumption)
 
-        return True, minimal_unsatisfiable_core
+        muc_found = True
+        return muc_found, minimal_unsatisfiable_core
+
+    def get_uc_all_brute_force(self):
+        # The simplest brute force approach to get all unsatisfiable cores. Taking the list of assumptions and checking
+        # every possible subset for being an unsatisfiable core. This approach will definitely include all minimal
+        # unsatisfiable cores and even the minimum core. In turn this approach takes (O(2^n)) Exponential time and
+        # will not at all be useful in real world scenarios which require big assumption sets and fast solving times.
+
+        # get the powerset of the assumption_list
+        powerset = chain.from_iterable(combinations(self.assumptions, r) for r in range(len(self.assumptions) + 1))
+
+        unsatisfiable_cores = []
+        for assumption_set in powerset:
+            sat, _, _ = self.solve(different_assumptions=assumption_set)
+            if not sat:
+                unsatisfiable_cores.append(assumption_set)
+
+        return unsatisfiable_cores
 
     def __str__(self):
         out = repr(self) + "\n"

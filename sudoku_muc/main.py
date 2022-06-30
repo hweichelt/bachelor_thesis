@@ -51,7 +51,10 @@ def muc_sudoku():
     else:
         print(f"MUC : {muc}")
 
-    # TODO : Look at propagator
+    print("UC ALL : BRUTE FORCE APPROACH")
+
+    ucs = container_1.get_uc_all_brute_force()
+    print("Cores Found (Cores/|Assumption-Powerset|):", len(ucs), "/", 2**len(container_1.assumptions))
 
 
 if __name__ == '__main__':
