@@ -27,9 +27,10 @@ def muc_sudoku():
     instance = "res/instances/sudoku_instance_1.lp"
     visualization = "res/visualization/visualize_sudoku.lp"
 
+    program_string = "\n".join([Util.get_file_content_str(program), Util.get_file_content_str(instance)])
+
     container_1 = Container(
-        program=program,
-        instance=instance,
+        program_string=program_string,
         assumptions=assumption_list,
     )
 

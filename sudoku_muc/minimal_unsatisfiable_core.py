@@ -46,20 +46,15 @@ class Util(ABC):
 
 class Container:
 
-    def __init__(self, program, instance, assumptions=None):
+    def __init__(self, program_string, assumptions=None):
         if assumptions is None:
             assumptions = []
 
         self.control = clingo.Control()
-        self.program = program
-        self.instance = instance
+        self.program_string = program_string
         self.assumptions = assumptions
 
-        program_string = Util.get_file_content_str(program)
-        instance_string = Util.get_file_content_str(instance)
-
         self.control.add("base", [], program_string)
-        self.control.add("base", [], instance_string)
 
         self.control.ground([("base", [])])
 
@@ -126,4 +121,4 @@ class Container:
         return out + f"</{self.__class__.__name__}>"
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} program={self.program} instance={self.instance}>"
+        return f"<{self.__class__.__name__}>"
