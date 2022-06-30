@@ -84,8 +84,7 @@ class Container:
             core = [self.assumptions_lookup[index] for index in solve_handle.core()]
         return satisfiable, model, core
 
-    def get_muc_iterative_deletion(self):
-        print("MUC ITERATIVE DELETION")
+    def get_muc_on_core_assumption_marking(self):
         satisfiable, _, core = self.solve()
         muc_found = False
         if satisfiable:

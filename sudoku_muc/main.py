@@ -44,14 +44,15 @@ def muc_sudoku():
     if satisfiable:
         Util.render_sudoku(model, visualization)
 
-    muc_found, muc = container_1.get_muc_iterative_deletion()
+    print("FIND MUC ON CORE : ASSUMPTION MARKING")
+    muc_found, muc = container_1.get_muc_on_core_assumption_marking()
 
     if not muc_found:
         print("MUC : Problem wasn't unsatisfiable to begin with, there is no minimal unsatisfiable core")
     else:
         print(f"MUC : {muc}")
 
-    print("UC ALL : BRUTE FORCE APPROACH")
+    print("FIND ALL UCS : BRUTE FORCE APPROACH")
 
     ucs = container_1.get_uc_all_brute_force()
     print("Cores Found (Cores/|Assumption-Powerset|):", len(ucs), "/", 2**len(container_1.assumptions))
