@@ -60,10 +60,12 @@ class Container:
 
         self.assumptions_lookup = {}
         if self.assumptions:
-            self.assumptions_lookup = {self.control.symbolic_atoms[assumption].literal: assumption for assumption in self.assumptions}
+            self.assumptions_lookup = {
+                self.control.symbolic_atoms[assumption].literal: assumption for assumption in self.assumptions
+            }
 
     def solve(self, different_assumptions=None):
-        shown_atoms = ["solution", "initial", "guess"]
+        shown_atoms = ["solution", "initial"]
 
         if different_assumptions is not None:
             assumptions_prep = [(assumption, True) for assumption in different_assumptions]

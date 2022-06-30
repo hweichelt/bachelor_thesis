@@ -4,14 +4,13 @@
 
 number(1..9).
 
+% Allow solutions
+{solution(X,Y,N) : number(X), number(Y), number(N)}.
+
 % Transfer initial values to solution
 solution(X,Y,V) :- initial(X,Y,V).
 % Generate Cage Variables for lookup
 cage(X1,Y1,X2,Y2):- solution(X1,Y1,_), solution(X2,Y2,_), ((X1-1)/3)==((X2-1)/3), ((Y1-1)/3)==((Y2-1)/3).
-
-% Allow guesses
-{guess(X,Y,N) : number(X), number(Y), number(N)}.
-solution(X,Y,N) :- guess(X,Y,N).
 
 % INTEGRITY CONSTRAINTS
 

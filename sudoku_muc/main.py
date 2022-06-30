@@ -7,20 +7,20 @@ def muc_sudoku():
     assumption_list = [
         # adding assumptions
         # CORRECT ASSUMPTIONS
-        clingo.Function("guess", [clingo.Number(4), clingo.Number(9), clingo.Number(3)]),
-        clingo.Function("guess", [clingo.Number(7), clingo.Number(1), clingo.Number(9)]),
-        clingo.Function("guess", [clingo.Number(2), clingo.Number(2), clingo.Number(7)]),
-        clingo.Function("guess", [clingo.Number(5), clingo.Number(7), clingo.Number(7)]),
-        clingo.Function("guess", [clingo.Number(3), clingo.Number(9), clingo.Number(7)]),
-        clingo.Function("guess", [clingo.Number(8), clingo.Number(2), clingo.Number(8)]),
-        clingo.Function("guess", [clingo.Number(1), clingo.Number(6), clingo.Number(8)]),
-        clingo.Function("guess", [clingo.Number(6), clingo.Number(7), clingo.Number(8)]),
-        clingo.Function("guess", [clingo.Number(2), clingo.Number(9), clingo.Number(8)]),
+        clingo.Function("solution", [clingo.Number(4), clingo.Number(9), clingo.Number(3)]),
+        clingo.Function("solution", [clingo.Number(7), clingo.Number(1), clingo.Number(9)]),
+        clingo.Function("solution", [clingo.Number(2), clingo.Number(2), clingo.Number(7)]),
+        clingo.Function("solution", [clingo.Number(5), clingo.Number(7), clingo.Number(7)]),
+        clingo.Function("solution", [clingo.Number(3), clingo.Number(9), clingo.Number(7)]),
+        clingo.Function("solution", [clingo.Number(8), clingo.Number(2), clingo.Number(8)]),
+        clingo.Function("solution", [clingo.Number(1), clingo.Number(6), clingo.Number(8)]),
+        clingo.Function("solution", [clingo.Number(6), clingo.Number(7), clingo.Number(8)]),
+        clingo.Function("solution", [clingo.Number(2), clingo.Number(9), clingo.Number(8)]),
         # CONFLICTING ASSUMPTIONS
         # double value for cell
-        clingo.Function("guess", [clingo.Number(4), clingo.Number(9), clingo.Number(5)]),
+        clingo.Function("solution", [clingo.Number(4), clingo.Number(9), clingo.Number(5)]),
         # value at the wrong position in cage (double 7 in cage(1,1))
-        clingo.Function("guess", [clingo.Number(1), clingo.Number(3), clingo.Number(7)]),
+        clingo.Function("solution", [clingo.Number(1), clingo.Number(3), clingo.Number(7)]),
     ]
 
     program = "res/sudoku_only_rules.lp"
