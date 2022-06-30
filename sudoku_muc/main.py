@@ -4,10 +4,8 @@ from minimal_unsatisfiable_core import Util, Container
 
 def muc_sudoku():
 
-    assumption_list = [
-        # adding assumptions
-        # CORRECT ASSUMPTIONS
-        "solution(4,9,1)",
+    assumptions_valid = [
+        "solution(4,9,3)",
         "solution(7,1,9)",
         "solution(2,2,7)",
         "solution(4,7,7)",
@@ -16,14 +14,37 @@ def muc_sudoku():
         "solution(1,6,8)",
         "solution(6,7,8)",
         "solution(2,9,8)",
-        # CONFLICTING ASSUMPTIONS
-        # double value for cell
-        "solution(4,9,5)",
-        # value at the wrong position in cage (double 7 in cage(1,1))
-        "solution(1,3,7)",
     ]
 
-    assumption_list = [clingo.parse_term(string) for string in assumption_list]
+    assumptions_unsat_atomic = [
+        "solution(5,5,7)"
+    ] + assumptions_valid
+
+    assumptions_unsat_multi_atomic = [
+        "solution(5,5,7)",
+        "solution(1,7,6)",
+        "solution(9,1,7)",
+    ] + assumptions_valid
+
+    assumptions_unsat_multi_internal = [
+        "solution(2,7,4)",
+        "solution(9,7,4)",
+    ] + assumptions_valid
+
+    assumptions_unsat_multi_combined = [
+
+    ] + assumptions_valid + assumptions_unsat_multi_atomic + assumptions_unsat_multi_internal
+
+    assumption_lists = {
+        'valid': assumptions_valid,
+        'atomic': assumptions_unsat_atomic,
+        "multi_atomic": assumptions_unsat_multi_atomic,
+        "multi_internal": assumptions_unsat_multi_internal,
+        "multi_combined": assumptions_unsat_multi_combined
+    }
+
+    for key, assumption_string_list in assumption_lists.items():
+        assumption_lists[key] = [clingo.parse_term(string) for string in assumption_string_list]
 
     program = "res/sudoku_only_rules.lp"
     instance = "res/instances/sudoku_instance_1.lp"
@@ -33,7 +54,7 @@ def muc_sudoku():
 
     container_1 = Container(
         program_string=program_string,
-        assumptions=assumption_list,
+        assumptions=assumption_lists["atomic"],
     )
 
     print([container_1])
@@ -59,6 +80,8 @@ def muc_sudoku():
 
     ucs = container_1.get_uc_all_brute_force()
     print("Cores Found (Cores/|Assumption-Powerset|):", len(ucs), "/", 2**len(container_1.assumptions))
+    minimum_ucs = container_1.get_minimum_ucs_brute_force()
+    print("Minimum UCs Found: ", minimum_ucs)
 
 
 if __name__ == '__main__':
