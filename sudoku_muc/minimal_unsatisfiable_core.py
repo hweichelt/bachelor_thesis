@@ -1,4 +1,5 @@
 import os
+import random
 from abc import ABC, abstractmethod
 from itertools import chain, combinations
 
@@ -98,6 +99,57 @@ class Container:
 
         muc_found = True
         return muc_found, minimal_unsatisfiable_core
+
+    def get_muc_iterative_deletion(self):
+        # This algorithm aims to return a minimal unsatisfiable core from the assumption set that is given for the
+        # container. In this way this algorithm is specifically optimized to also handle Multi Unsatisfiable Cores and
+        # compute more efficiently than the brute force algorithm.
+        # It works in the way that the assumption set is iteratively reduced until it becomes satisfiable or empty. When
+        # this point is reached, the last removed assumption is added to a list of minimal core members, and the process
+        # is repeated with an assumption set, that is missing this assumption. This is continued until the remaining
+        # assumption set becomes satisfiable from the start.
+
+        satisfiable, _, core = self.solve()
+        if satisfiable:
+            return []
+
+        minimal_unsatisfiable_core_members = []
+        assumption_set = self.assumptions
+
+        # shuffling assumption_set before solving for added suspense
+        # TODO : remove when sufficiently tested
+        random.shuffle(assumption_set)
+
+        print([str(a) for a in assumption_set])
+
+        remaining_set_satisfiable = False
+        while not remaining_set_satisfiable:
+            working_set_satisfiable = False
+            for i in range(len(assumption_set)):
+                # iteratively remove assumptions from the set until it becomes satisfiable or empty
+                if self.solve(different_assumptions=assumption_set[i:])[0]:
+                    working_set_satisfiable = True
+                    break
+
+            # check if the working set became satisfiable or the end was reached
+            if not working_set_satisfiable:
+                # select last assumption of the working set
+                unsat_core_member = assumption_set[-1]
+            else:
+                # select last removed item
+                unsat_core_member = assumption_set[i-1]
+
+            # update step
+            minimal_unsatisfiable_core_members.append(unsat_core_member)
+            assumption_set = [a for a in assumption_set if a != unsat_core_member]
+
+            # check whether the remaining assumption set is already satisfiable
+            if self.solve(different_assumptions=assumption_set)[0]:
+                remaining_set_satisfiable = True
+
+        # TODO : Check if it really always works !
+
+        return minimal_unsatisfiable_core_members
 
     def get_uc_all_brute_force(self):
         # The simplest brute force approach to get all unsatisfiable cores. Taking the list of assumptions and checking

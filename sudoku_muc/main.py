@@ -54,7 +54,7 @@ def muc_sudoku():
 
     container_1 = Container(
         program_string=program_string,
-        assumptions=assumption_lists["atomic"],
+        assumptions=assumption_lists["multi_atomic"],
     )
 
     print([container_1])
@@ -75,6 +75,16 @@ def muc_sudoku():
         print("MUC : Problem wasn't unsatisfiable to begin with, there is no minimal unsatisfiable core")
     else:
         print(f"MUC : {muc}")
+
+    print("FIND MUC ON CORE : ITERATIVE DELETION")
+
+    muc = container_1.get_muc_iterative_deletion()
+    if muc:
+        print("MUC: ", [str(a) for a in muc])
+    else:
+        print("No MUC was found")
+
+    return
 
     print("FIND ALL UCS : BRUTE FORCE APPROACH")
 
