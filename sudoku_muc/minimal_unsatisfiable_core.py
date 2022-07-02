@@ -109,6 +109,7 @@ class Container:
         # is repeated with an assumption set, that is missing this assumption. This is continued until the remaining
         # assumption set becomes satisfiable from the start.
 
+        # making sure the initial assumption set is unsatisfiable
         satisfiable, _, core = self.solve()
         if satisfiable:
             return []
@@ -119,8 +120,6 @@ class Container:
         # shuffling assumption_set before solving for added suspense
         # TODO : remove when sufficiently tested
         random.shuffle(assumption_set)
-
-        print([str(a) for a in assumption_set])
 
         remaining_set_satisfiable = False
         while not remaining_set_satisfiable:
@@ -139,13 +138,16 @@ class Container:
                 # select last removed item
                 unsat_core_member = assumption_set[i-1]
 
-            # update step
+            # update step : remove found assumption from assumption set and add it to the core members
             minimal_unsatisfiable_core_members.append(unsat_core_member)
             assumption_set = [a for a in assumption_set if a != unsat_core_member]
 
             # check whether the remaining assumption set is already satisfiable
             if self.solve(different_assumptions=assumption_set)[0]:
                 remaining_set_satisfiable = True
+
+        # sorting the MUC list for returning : not necessary, but nice to have
+        minimal_unsatisfiable_core_members.sort()
 
         # TODO : Check if it really always works !
 
