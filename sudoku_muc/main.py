@@ -54,7 +54,7 @@ def muc_sudoku():
 
     container_1 = Container(
         program_string=program_string,
-        assumptions=assumption_lists["multi_atomic"],
+        assumptions=assumption_lists["multi_combined"],
     )
 
     print([container_1])
@@ -83,6 +83,12 @@ def muc_sudoku():
         print("UC: ", [str(a) for a in uc])
     else:
         print("No UC was found")
+
+    mucs = container_1.get_muc_all_iterative_deletion()
+    if mucs:
+        print("MUCs: \n", "\n".join(["\t+ " + " ".join([str(a) for a in core]) for core in mucs]))
+    else:
+        print("No MUCs were found")
 
     return
 

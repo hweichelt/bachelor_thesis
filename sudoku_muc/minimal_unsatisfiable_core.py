@@ -155,6 +155,41 @@ class Container:
 
         return minimal_unsatisfiable_core_members
 
+    def get_muc_all_iterative_deletion(self):
+        # This algorithm is an extension the iterative deletion uc algorithm. The iterative deletion uc algorithm comes
+        # up with an assumption subset that contains conflict assumptions, which have to be part of a MUC. These
+        # assumptions alone aren't really useful, but with this algorithm, we can use them to compute all MUCs
+        # associated with assumptions in this selection.
+        # We are using a probe set, which is iteratively initiated with an assumption of the found UC. From there, we
+        # use the original assumption set minus the found core to iteratively remove assumptions until it united with
+        # the probe set becomes satisfiable (or empty). When satisfiable, the last removed assumption is added to the
+        # probe set, and,  if empty, the probe set is cleared and its former contents become one of the found MUCs
+
+        uc = self.get_uc_iterative_deletion()
+        if not uc:
+            return []
+
+        minimal_unsatisfiable_cores_found = []
+
+        assumptions_without_uc = [a for a in self.assumptions if a not in uc]
+        for core_assumption in uc:
+            probe_set = [core_assumption]
+            # deepcopy assumption set without uc into working set
+            working_set = list(assumptions_without_uc)
+
+            for assumption in assumptions_without_uc:
+                working_set.remove(assumption)
+                print(core_assumption, ":", assumption, "->", len(working_set), ":", probe_set)
+                # test loop condition
+                current_assignment_satisfiable = self.solve(different_assumptions=probe_set + working_set)[0]
+                if current_assignment_satisfiable:
+                    probe_set.append(assumption)
+
+            minimal_unsatisfiable_cores_found.append(probe_set)
+            print("---")
+
+        return minimal_unsatisfiable_cores_found
+
     def get_uc_all_brute_force(self):
         # The simplest brute force approach to get all unsatisfiable cores. Taking the list of assumptions and checking
         # every possible subset for being an unsatisfiable core. This approach will definitely include all minimal
