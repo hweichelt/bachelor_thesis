@@ -76,13 +76,13 @@ def muc_sudoku():
     else:
         print(f"MUC : {muc}")
 
-    print("FIND MUC ON CORE : ITERATIVE DELETION")
+    print("FIND UC ON ASSUMPTION SET : ITERATIVE DELETION")
 
-    muc = container_1.get_muc_iterative_deletion()
-    if muc:
-        print("MUC: ", [str(a) for a in muc])
+    uc = container_1.get_uc_iterative_deletion()
+    if uc:
+        print("UC: ", [str(a) for a in uc])
     else:
-        print("No MUC was found")
+        print("No UC was found")
 
     return
 

@@ -100,7 +100,7 @@ class Container:
         muc_found = True
         return muc_found, minimal_unsatisfiable_core
 
-    def get_muc_iterative_deletion(self):
+    def get_uc_iterative_deletion(self):
         # This algorithm aims to return a minimal unsatisfiable core from the assumption set that is given for the
         # container. In this way this algorithm is specifically optimized to also handle Multi Unsatisfiable Cores and
         # compute more efficiently than the brute force algorithm.
@@ -150,6 +150,8 @@ class Container:
         minimal_unsatisfiable_core_members.sort()
 
         # TODO : Check if it really always works !
+
+        # TODO : This doesnt return a MUC!! But it returns an UC that is a great basis to compute the MUCs
 
         return minimal_unsatisfiable_core_members
 
