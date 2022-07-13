@@ -46,7 +46,7 @@ def muc_sudoku():
     for key, assumption_string_list in assumption_lists.items():
         assumption_lists[key] = [clingo.parse_term(string) for string in assumption_string_list]
 
-    program = "res/sudoku_only_rules.lp"
+    program = "res/examples/sudoku/sudoku_only_rules.lp"
     instance = "res/instances/sudoku_instance_1.lp"
     visualization = "res/visualization/visualize_sudoku.lp"
 

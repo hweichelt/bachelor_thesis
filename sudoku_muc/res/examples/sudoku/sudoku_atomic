@@ -1,0 +1,3 @@
+#include "sudoku_valid.lp".
+
+solution(5,5,7).

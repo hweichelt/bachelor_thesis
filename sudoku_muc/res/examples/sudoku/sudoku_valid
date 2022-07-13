@@ -1,0 +1,9 @@
+assume(solution(4,9,3)).
+assume(solution(7,1,9)).
+assume(solution(2,2,7)).
+assume(solution(4,7,7)).
+assume(solution(3,9,7)).
+assume(solution(8,2,8)).
+assume(solution(1,6,8)).
+assume(solution(6,7,8)).
+assume(solution(2,9,8)).

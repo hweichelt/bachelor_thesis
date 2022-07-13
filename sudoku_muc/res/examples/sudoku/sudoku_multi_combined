@@ -1,0 +1,3 @@
+#include "sudoku_valid.lp".
+#include "sudoku_multi_atomic.lp".
+#include "sudoku_multi_internal.lp".

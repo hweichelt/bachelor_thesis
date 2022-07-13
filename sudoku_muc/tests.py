@@ -25,7 +25,7 @@ def clingraph_factbase_computation():
     ctl = clingo.Control()
     fb = Factbase(prefix="viz_", default_graph="sudoku")
 
-    program_string = Util.get_file_content_str("res/sudoku_solver.lp")
+    program_string = Util.get_file_content_str("res/examples/sudoku/sudoku_solver.lp")
     instance_string = Util.get_file_content_str("res/instances/sudoku_instance_very_small.lp")
     # TODO : ERROR INSIDE VISUALIZE SUDOKU .LP
     visualization_string = Util.get_file_content_str("res/visualization/visualize_sudoku_example.lp")
