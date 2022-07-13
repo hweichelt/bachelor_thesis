@@ -4,7 +4,7 @@ from minimal_unsatisfiable_core import Util, Container
 
 def muc_sudoku():
 
-    example_directory = "res/examples/sudoku/sudoku_multi_atomic"
+    example_directory = "res/examples/abstract_multi_core"
     visualization = "res/visualization/visualize_sudoku.lp"
 
     container_1 = Container(
