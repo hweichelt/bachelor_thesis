@@ -43,7 +43,7 @@
 				2. iteratively remove Assumptions $A_j$ from $A \setminus MUC_i$ until it becomes satisfiable united with $P$
 					+ when it does before $A \setminus MUC_i$ is empty, add the last added $A_j$ to $P$ and rerun without $A_j$ in $A\setminus MUC_i$
 					+ else, the content of $P$ is either the full internal core or an atomic core (if size is $1$)
-	+ ![[res/iterative_deletion_muc_extension.drawio.png]]
+	+ ![](res/iterative_deletion_muc_extension.drawio.png)
 		+ Improvement Potential:
 			+ I think, when an internal core part is found, the up to this point deleted assumptions can be discarded, because their deletion didn't yield any result, which the deletion of a MUC member should have.
 			+ This would reduce the solving time (to $m*n$?)
@@ -81,13 +81,13 @@
 + Ideas:
 	+ **Idea** for an Algorithm that tries to find the Minimum Unsat Core of a Problem by using a Version of Breadth-First-Search:
 		+ Imagine a Search Tree for the Assumption-Set $\{a,b,c\}$ which is built like this:
-		+ ![[res/BFS.jpeg]]
+		+ ![](search_bfs.jpeg)
 		+ When traversing the Search-Tree this way the first Unsat Core that is found will also be the (or one of the) Minimum Unsat Cores.
 		+ But due to it being a Breadth-First-Search, the runtime until a Core is found is the same as the exponential approach that is $O(2^n)$ which is not really usable
 	+ **Idea** for a Problem Definition: Multi Unsat Cores
 		+ A Multi Unsat Core is an Unsat Core that is not Minimal, which in turn contains two other Minimal Unsat Cores $MUC_i$ that are totally independent from each other (No Assumption $A_n \in MUC_i$ is also in another Core $A_n \not\in MUC_j, i\neq j$ )
 		+ Illustration on Types of Multi Unsat Cores (For Sudoku Domain):
-		+ ![[res/multi_unsat_core_types.drawio.png]]
+		+ ![](multi_unsat_core_types.png)
 		+ These are the three different kinds of core patterns I could imagine
 	+ **Idea** for an Algorithm that is looking for all Independent Minimal Cores of a Multi Unsat Core:
 		+ The Idea : Extension to the initial iterative deletion algorithm that retrieves an minimal Unsat Core from the assumption set.
@@ -102,7 +102,7 @@
 		+ This assumption is then removed from the original assumption set and the process is repeated
 		+ This continues until the remaining assumption set is satisfiable from the start
 		+ The Algorithm is illustrated below :
-		+ ![[res/Untitled Diagram.drawio(1) 1.png]]
+		+ ![](iterative_deletion_muc_v2.jpeg)
 		+ One Key constraint is, that it seems to only be possible to find atomic cores forming a Multi Unsat Core this way
 		+ But as far as I think, at least for the Sudoku Domain this should be the only type of assumption core that occurs. Or is it? 🤔
 	+ **Idea** for a minimum Unsat Core algorithm inside ASP
