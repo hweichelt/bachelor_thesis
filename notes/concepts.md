@@ -41,17 +41,17 @@ Given a Formula $\varphi, UC$ is an unsatisfiable core for $\varphi$ if $UC$ is 
 ### D2 : Minimal Unsatisfiable Core
 + Source : ["On Computing Minimum Unsatisfiable Cores": Lynce, Silva](../papers/1.pdf)
 
-An unsatisfiable core $UC$ for $\varphi$ is a minimal unsatisfiable core if removing any clause $\omega \in UC$ from $UC$ implies that $UC - \{\omega\}$ is not an unsatisfiable core.
+An unsatisfiable core $UC$ for $\varphi$ is a minimal unsatisfiable core if removing any clause $\omega \in UC$ from $UC$ implies that $UC - \lbrace\omega\rbrace$ is not an unsatisfiable core.
 
 ### D3 : Minimum Unsatisfiable Core
 + Source : ["On Computing Minimum Unsatisfiable Cores": Lynce, Silva](../papers/1.pdf)
 
-Consider a Formula $\varphi$ and the set of all unsatisfiable cores for $\varphi: \{UC_1, ..., UC_j\}$. Then $UC_k \in \{UC_1, ..., UC_j\}$ is a minimum unsatisfiable core for $\varphi$ if $\forall UC_i \in \{UC_1, ..., UC_j\}$, $0<i\leq j : |UC_i| \geq |UC_j|$.
+Consider a Formula $\varphi$ and the set of all unsatisfiable cores for $\varphi: \lbrace UC_1, ..., UC_j\rbrace$. Then $UC_k \in \lbrace UC_1, ..., UC_j\rbrace$ is a minimum unsatisfiable core for $\varphi$ if $\forall UC_i \in \lbrace UC_1, ..., UC_j\rbrace, 0<i\leq j : |UC_i| \geq |UC_j|$.
 
 ### D4 : Multi Unsatisfiable Core
 + Source : Own Idea
 
-A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi$, which contains a set of at least two independent minimal unsatisfiable cores $\{MUC_1, ..., MUC_n\}, n\geq 2$. That means that for each assumption $A_x \in MUC_i$ it holds, that $A_x \not\in MUC_j, i\neq j$.
+A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi$, which contains a set of at least two independent minimal unsatisfiable cores $\lbrace MUC_1, ..., MUC_n\rbrace, n\geq 2$. That means that for each assumption $A_x \in MUC_i$ it holds, that $A_x \not\in MUC_j, i\neq j$.
 
 ***
 
