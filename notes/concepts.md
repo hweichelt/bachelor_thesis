@@ -36,17 +36,22 @@ The task of reducing any unsatisfiable core to a minimal version of itself is al
 ### D1 : Unsatisfiable Core
 + Source : ["On Computing Minimum Unsatisfiable Cores": Lynce, Silva](../papers/1.pdf)
 
+Given a Formula $\varphi, UC$ is an unsatisfiable core for $\varphi$ if $UC$ is a formula $\varphi_c$ so that $\varphi_c$ is unsatisfiable and $\varphi_c \subseteq \varphi$.
 
 ### D2 : Minimal Unsatisfiable Core
 + Source : ["On Computing Minimum Unsatisfiable Cores": Lynce, Silva](../papers/1.pdf)
 
+An unsatisfiable core $UC$ for $\varphi$ is a minimal unsatisfiable core if removing any clause $\omega \in UC$ from $UC$ implies that $UC - \{\omega\}$ is not an unsatisfiable core.
 
 ### D3 : Minimum Unsatisfiable Core
 + Source : ["On Computing Minimum Unsatisfiable Cores": Lynce, Silva](../papers/1.pdf)
 
+Consider a Formula $\varphi$ and the set of all unsatisfiable cores for $\varphi: \{UC_1, ..., UC_j\}$. Then $UC_k \in \{UC_1, ..., UC_j\}$ is a minimum unsatisfiable core for $\varphi$ if $\forall UC_i \in \{UC_1, ..., UC_j\}$, $0<i\leq j : |UC_i| \geq |UC_j|$.
 
-### D4 : Multi-Unsat-Core
+### D4 : Multi Unsatisfiable Core
 + Source : Own Idea
+
+A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi$, which contains a set of at least two independent minimal unsatisfiable cores $\{MUC_1, ..., MUC_n\}, n\geq 2$. That means that for each assumption $A_x \in MUC_i$ it holds, that $A_x \not\in MUC_j, i\neq j$.
 
 ***
 
