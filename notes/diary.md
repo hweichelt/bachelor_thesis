@@ -81,13 +81,13 @@
 + Ideas:
 	+ **Idea** for an Algorithm that tries to find the Minimum Unsat Core of a Problem by using a Version of Breadth-First-Search:
 		+ Imagine a Search Tree for the Assumption-Set $\{a,b,c\}$ which is built like this:
-		+ ![](search_bfs.jpeg)
+		+ ![](res/search_bfs.jpeg)
 		+ When traversing the Search-Tree this way the first Unsat Core that is found will also be the (or one of the) Minimum Unsat Cores.
 		+ But due to it being a Breadth-First-Search, the runtime until a Core is found is the same as the exponential approach that is $O(2^n)$ which is not really usable
 	+ **Idea** for a Problem Definition: Multi Unsat Cores
 		+ A Multi Unsat Core is an Unsat Core that is not Minimal, which in turn contains two other Minimal Unsat Cores $MUC_i$ that are totally independent from each other (No Assumption $A_n \in MUC_i$ is also in another Core $A_n \not\in MUC_j, i\neq j$ )
 		+ Illustration on Types of Multi Unsat Cores (For Sudoku Domain):
-		+ ![](multi_unsat_core_types.png)
+		+ ![](res/multi_unsat_core_types.png)
 		+ These are the three different kinds of core patterns I could imagine
 	+ **Idea** for an Algorithm that is looking for all Independent Minimal Cores of a Multi Unsat Core:
 		+ The Idea : Extension to the initial iterative deletion algorithm that retrieves an minimal Unsat Core from the assumption set.
@@ -102,7 +102,7 @@
 		+ This assumption is then removed from the original assumption set and the process is repeated
 		+ This continues until the remaining assumption set is satisfiable from the start
 		+ The Algorithm is illustrated below :
-		+ ![](iterative_deletion_muc_v2.jpeg)
+		+ ![](res/iterative_deletion_muc_v2.jpeg)
 		+ One Key constraint is, that it seems to only be possible to find atomic cores forming a Multi Unsat Core this way
 		+ But as far as I think, at least for the Sudoku Domain this should be the only type of assumption core that occurs. Or is it? 🤔
 	+ **Idea** for a minimum Unsat Core algorithm inside ASP
