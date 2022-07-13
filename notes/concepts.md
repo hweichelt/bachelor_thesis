@@ -26,7 +26,7 @@ This Task is highly interesting because its goal is to find the minimum unsatisf
 The task of reducing any unsatisfiable core to a minimal version of itself is also highly useful. Often its not really necessary to find the minimum unsatisfiable core,  but we only have to minimize a given unsatisfiable core. in most cases this can be done very efficiently but doesn't guarantee any minimality.
 
 ### Algorithms:
-+ [[#A4 Finding a Minimal Unsat Core using Assumption Marking]]
++ [A4 : Finding a Minimal Unsat Core using Assumption Marking](#A4-Finding-a-Minimal-Unsat-Core-using-Assumption-Marking)
 	+ Only works If the Unsat Core is not a multi unsatisfiable core!
 
 ***
