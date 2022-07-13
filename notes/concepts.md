@@ -1,5 +1,12 @@
 # Concepts
 
+## Contents
+1. [Tasks](#tasks)
+2. [Definitions](#definitions)
+3. [Algorithms](#algorithms)
+
+***
+
 ## Tasks
 When looking at Unsat-Cores many tasks come to mind that are useful when dealing with them. This here is a growing collection of Tasks to somehow minimize Unsat Cores. Each Task is suited for a different problem, and some Tasks are way harder to solve than others, so this Collection aims to give an overview over the whole problem setting.
 
