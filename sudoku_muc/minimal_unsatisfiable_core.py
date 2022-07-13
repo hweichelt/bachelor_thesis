@@ -9,12 +9,50 @@ from clingraph.graphviz import compute_graphs, render
 from clingraph.clingo_utils import ClingraphContext
 
 
+ASSUMPTION_SIGNATURE = "assume"
+SHOWN_SIGNATURES = ["solution", "initial"]
+
+
 class Util(ABC):
 
     @staticmethod
     def get_file_content_str(filename):
         with open(f"{filename}") as f:
             out = f.read()
+        return out
+
+    @staticmethod
+    def read_in_asp_file(path, verbose=0, included_filepaths=None):
+        # this function works similarly to the get_file_content_str() function but is optimized for clingo asp programs.
+        # If the clingo file contains an #include statement the contents of this included file are also recursively read
+        # in and appended to the end of the return string.
+        # This algorithm uses a list of already included_filepaths to avoid landing in an infinite loop.
+
+        if included_filepaths is None:
+            included_filepaths = [os.path.abspath(path)]
+
+        out = ""
+        parent_directory = path[:-len(path.split("/")[-1])]
+        with open(f"{path}") as f:
+            for line in f:
+                # check for each line if it is an include statement
+                if "#include" in line:
+                    # if it is recursively call this function and add it's output to out after a few checks
+                    included_filename = line.split('"')[-2]
+                    included_filepath = os.path.abspath(parent_directory + included_filename)
+                    if included_filepath not in included_filepaths:
+                        if not os.path.isfile(included_filepath):
+                            raise ValueError(f"Tried to include {included_filepath} but couldn't find file")
+                        if verbose > 0:
+                            print("included:", included_filepath)
+                        included_filepaths.append(included_filepath)
+                        out += Util.read_in_asp_file(
+                            included_filepath,
+                            included_filepaths=included_filepaths,
+                            verbose=verbose
+                        )
+                else:
+                    out += line
         return out
 
     @staticmethod
@@ -47,17 +85,33 @@ class Util(ABC):
 
 class Container:
 
-    def __init__(self, program_string, assumptions=None):
-        if assumptions is None:
-            assumptions = []
+    def __init__(self, example_directory):
+        if not os.path.isdir(example_directory):
+            raise ValueError("example_directory has to be a valid directory path")
+        if not os.path.isfile(example_directory + "/assumptions.lp"):
+            raise ValueError("example_directory has to contain an assumptions.lp file")
+        if not os.path.isfile(example_directory + "/encoding.lp"):
+            raise ValueError("example_directory has to contain an encoding.lp file")
+
+        # read in the contents of assumptions.lp and encoding.lp (extras.lp) in example_directory
+        file_contents = [
+            Util.read_in_asp_file(example_directory + "/assumptions.lp", verbose=1),
+            Util.read_in_asp_file(example_directory + "/encoding.lp", verbose=1),
+        ]
+        if os.path.isfile(example_directory + "/extras.lp"):
+            file_contents.append(Util.read_in_asp_file(example_directory + "/extras.lp", verbose=1))
+        program_string = "\n".join(file_contents)
 
         self.control = clingo.Control()
         self.program_string = program_string
-        self.assumptions = assumptions
 
         self.control.add("base", [], program_string)
 
         self.control.ground([("base", [])])
+
+        self.assumptions = [
+            a.symbol.arguments[0] for a in self.control.symbolic_atoms.by_signature(ASSUMPTION_SIGNATURE, 1)
+        ]
 
         self.assumptions_lookup = {}
         if self.assumptions:
@@ -66,8 +120,6 @@ class Container:
             }
 
     def solve(self, different_assumptions=None):
-        shown_atoms = ["solution", "initial"]
-
         if different_assumptions is not None:
             assumptions_prep = [(assumption, True) for assumption in different_assumptions]
         else:
@@ -78,7 +130,7 @@ class Container:
             if solve_handle.model() is not None:
                 # filter out all atoms from the model that are not in shown_atoms
                 model = [atom for atom in solve_handle.model().symbols(atoms=True) if
-                         any([atom.match(signature, 3, True) for signature in shown_atoms])]
+                         any([atom.match(signature, 3, True) for signature in SHOWN_SIGNATURES])]
             else:
                 model = []
             core = [self.assumptions_lookup[index] for index in solve_handle.core()]

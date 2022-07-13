@@ -1,0 +1,1 @@
+../sudoku_only_rules.lp

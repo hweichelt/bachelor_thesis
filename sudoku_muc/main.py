@@ -4,57 +4,11 @@ from minimal_unsatisfiable_core import Util, Container
 
 def muc_sudoku():
 
-    assumptions_valid = [
-        "solution(4,9,3)",
-        "solution(7,1,9)",
-        "solution(2,2,7)",
-        "solution(4,7,7)",
-        "solution(3,9,7)",
-        "solution(8,2,8)",
-        "solution(1,6,8)",
-        "solution(6,7,8)",
-        "solution(2,9,8)",
-    ]
-
-    assumptions_unsat_atomic = [
-        "solution(5,5,7)"
-    ] + assumptions_valid
-
-    assumptions_unsat_multi_atomic = [
-        "solution(5,5,7)",
-        "solution(1,7,6)",
-        "solution(9,1,7)",
-    ] + assumptions_valid
-
-    assumptions_unsat_multi_internal = [
-        "solution(2,7,4)",
-        "solution(9,7,4)",
-    ] + assumptions_valid
-
-    assumptions_unsat_multi_combined = [
-
-    ] + assumptions_valid + assumptions_unsat_multi_atomic + assumptions_unsat_multi_internal
-
-    assumption_lists = {
-        'valid': assumptions_valid,
-        'atomic': assumptions_unsat_atomic,
-        "multi_atomic": assumptions_unsat_multi_atomic,
-        "multi_internal": assumptions_unsat_multi_internal,
-        "multi_combined": assumptions_unsat_multi_combined
-    }
-
-    for key, assumption_string_list in assumption_lists.items():
-        assumption_lists[key] = [clingo.parse_term(string) for string in assumption_string_list]
-
-    program = "res/examples/sudoku/sudoku_only_rules.lp"
-    instance = "res/instances/sudoku_instance_1.lp"
+    example_directory = "res/examples/sudoku/sudoku_multi_atomic"
     visualization = "res/visualization/visualize_sudoku.lp"
 
-    program_string = "\n".join([Util.get_file_content_str(program), Util.get_file_content_str(instance)])
-
     container_1 = Container(
-        program_string=program_string,
-        assumptions=assumption_lists["multi_combined"],
+        example_directory=example_directory
     )
 
     print([container_1])
@@ -76,6 +30,8 @@ def muc_sudoku():
     else:
         print(f"MUC : {muc}")
 
+    return
+
     print("FIND UC ON ASSUMPTION SET : ITERATIVE DELETION")
 
     uc = container_1.get_uc_iterative_deletion()
@@ -89,8 +45,6 @@ def muc_sudoku():
         print("MUCs: \n", "\n".join(["\t+ " + " ".join([str(a) for a in core]) for core in mucs]))
     else:
         print("No MUCs were found")
-
-    return
 
     print("FIND ALL UCS : BRUTE FORCE APPROACH")
 

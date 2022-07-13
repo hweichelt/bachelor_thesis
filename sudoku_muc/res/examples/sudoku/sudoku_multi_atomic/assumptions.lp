@@ -1,4 +1,4 @@
-#include "sudoku_valid.lp".
+#include "../sudoku_valid/assumptions.lp".
 
 assume(solution(5,5,7)).
 assume(solution(1,7,6)).
