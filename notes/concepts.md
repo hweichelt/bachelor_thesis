@@ -60,11 +60,33 @@ A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi
 ### A1 : Brute-Force : Finding all Unsat Cores
 `minimal_unsatisfiable_core.Container.get_uc_all_brute_force()`
 
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| List of all contained Unsatisfiable Cores|
+
+This algorithm is used to solve the task [T1 : Finding all Unsat Cores of an Assumption Set](#t1--finding-all-unsat-cores-of-an-assumption-set). It approaches the problem in a brute force way, by first computing all possible subsets of the assumption set (powerset), and then checks all of them whether they are an unsatisfiable core or not.
+
 ### A2 : Brute-Force : Finding all Minimal Unsat Cores
 `NOT IMPLEMENTED YET`
 
 ### A3 : Brute-Force : Finding the Minimum Unsat Core
 `minimal_unsatisfiable_core.Container.get_minimum_ucs_brute_force()`
 
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| Minimum Unsatisfiable Core of Assumption Set|
+
+This algorithm is used to solve the task [T3 : Finding the Minimum Unsat Core of an Unsat Assumption Set](#t3--finding-the-minimum-unsat-core-of-an-unsat-assumption-set). It first uses algorithm [A1 : Brute-Force : Finding all Unsat Cores](#a1--brute-force--finding-all-unsat-cores) to find all unsatisfiable cores for the assumption set (brute force), and then searches for the unsatisfiable core of the smallest size.
+
 ### A4 : Finding a Minimal Unsat Core using Assumption Marking
 `minimal_unsatisfiable_core.Container.get_muc_on_core_assumption_marking()`
+
+| | |
+|:-|:-|
+|**Input**| Unsatisfiable Core that's not a Multi UC|
+|**Output**| A Minimal Unsatisfiable Core (Minimum not guaranteed)|
+
+This algorithm is used to solve the task [T4 : Reducing an Unsat Core to any Minimal Unsat Core](#t4--reducing-an-unsat-core-to-any-minimal-unsat-core). It is important to note though, that the algorithm only works on assumption sets, that aren't multi unsatisfiable cores.
+It works by iterating through the assumption set and in each step marking a different assumption. We then try to solve the original problem with the assumption set excluding the marked assumption. If it gets satisfiable this way, the marked assumption is added to the minimal core members. This continues until all assumptions have been checked.
