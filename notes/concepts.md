@@ -46,7 +46,7 @@ An unsatisfiable core $UC$ for $\varphi$ is a minimal unsatisfiable core if remo
 ### D3 : Minimum Unsatisfiable Core
 + Source : ["On Computing Minimum Unsatisfiable Cores": Lynce, Silva](../papers/1.pdf)
 
-Consider a Formula $\varphi$ and the set of all unsatisfiable cores for $\varphi: \lbrace UC_1, ..., UC_j\rbrace$. Then $UC_k \in \lbrace UC_1, ..., UC_j\rbrace$ is a minimum unsatisfiable core for $\varphi$ if $\forall UC_i \in \lbrace UC_1, ..., UC_j\rbrace, 0<i\leq j : |UC_i| \geq |UC_j|$.
+Consider a Formula $\varphi$ and the set of all unsatisfiable cores for $\varphi: \lbrace UC_1, ..., UC_j\rbrace$. Then $UC_k \in \lbrace UC_1, ..., UC_j\rbrace$ is a minimum unsatisfiable core for $\varphi$ if $\forall UC_i \in \lbrace UC_1, ..., UC_j\rbrace, 0 < i \leq j : |UC_i| \geq |UC_j|$.
 
 ### D4 : Multi Unsatisfiable Core
 + Source : Own Idea
