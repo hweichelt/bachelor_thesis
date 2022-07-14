@@ -259,6 +259,26 @@ class Container:
 
         return unsatisfiable_cores
 
+    def get_all_minimal_ucs_brute_force(self):
+        # This algorithm implements the brute force way of finding all minimal unsatisfiable core of an assumption set
+        # (unsatisfiable core). It iterates over the whole powerset of the assumptions and checks whether the current
+        # set is an unsatisfiable core. If it is, it's stored in a list so every future set that has an already found
+        # core as a subset can be skipped.
+
+        # powerset ordered by size ascending
+        powerset = chain.from_iterable(combinations(self.assumptions, r) for r in range(len(self.assumptions) + 1))
+
+        minimal_unsatisfiable_cores = []
+        for assumption_set in powerset:
+            # continue if the assumption_set has an already found minimal core as a subset
+            if any([all([(a in assumption_set) for a in core]) for core in minimal_unsatisfiable_cores]):
+                continue
+            sat, _, _ = self.solve(different_assumptions=assumption_set)
+            if not sat:
+                minimal_unsatisfiable_cores.append(assumption_set)
+
+        return minimal_unsatisfiable_cores
+
     def get_minimum_ucs_brute_force(self):
         # this algorithm just implements the brute force algorithm for all ucs (get_uc_all_brute_force()) and finds the
         # smallest core within the set of ucs that is returned

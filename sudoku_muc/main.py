@@ -6,6 +6,7 @@ def muc_sudoku():
 
     example_directory = "res/examples/abstract_multi_core"
     visualization = "res/visualization/visualize_sudoku.lp"
+    render_sudoku = False
 
     container_1 = Container(
         example_directory=example_directory
@@ -19,7 +20,7 @@ def muc_sudoku():
     print("model : ", model)
     print("core : ", core)
 
-    if satisfiable:
+    if satisfiable and render_sudoku:
         Util.render_sudoku(model, visualization)
 
     print("FIND MUC ON CORE : ASSUMPTION MARKING")
@@ -29,6 +30,8 @@ def muc_sudoku():
         print("MUC : Problem wasn't unsatisfiable to begin with, there is no minimal unsatisfiable core")
     else:
         print(f"MUC : {muc}")
+
+    print(container_1.get_all_minimal_ucs_brute_force())
 
     return
 
