@@ -75,7 +75,14 @@ A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi
 This algorithm is used to solve the task [T1 : Finding all Unsat Cores of an Assumption Set](#t1--finding-all-unsat-cores-of-an-assumption-set). It approaches the problem in a brute force way, by first computing all possible subsets of the assumption set (powerset), and then checks all of them whether they are an unsatisfiable core or not.
 
 ### A2 : Brute-Force : Finding all Minimal Unsat Cores
-`NOT IMPLEMENTED YET`
+`minimal_unsatisfiable_core.Container.get_all_minimal_ucs_brute_force()`
+
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| A List of all minimal Unsatisfiable Core in the Assumption Set|
+
+This algorithm implements the brute force way of the task [T2 : Finding all Minimal Unsat Cores of an Unsat Assumption Set](#t2--finding-all-minimal-unsat-cores-of-an-unsat-assumption-set). It iterates over the whole powerset of the assumptions and checks whether the current set is an unsatisfiable core. If it is, it's stored in a list so that every future set that has an already found core as a subset can be skipped.
 
 ### A3 : Brute-Force : Finding the Minimum Unsat Core
 `minimal_unsatisfiable_core.Container.get_minimum_ucs_brute_force()`
