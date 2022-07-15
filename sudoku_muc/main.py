@@ -1,4 +1,5 @@
 import clingo
+import time
 from minimal_unsatisfiable_core import Util, Container
 
 
@@ -31,7 +32,16 @@ def muc_sudoku():
     else:
         print(f"MUC : {muc}")
 
-    print(container_1.get_all_minimal_ucs_brute_force())
+    time_bf_start = time.time()
+    ucs = container_1.get_uc_all_brute_force()
+    time_bf_end = time.time()
+
+    time_bf_muc_start = time.time()
+    mucs = container_1.get_all_minimal_ucs_brute_force()
+    time_bf_muc_end = time.time()
+
+    print("time BF All:", time_bf_end - time_bf_start, "s")
+    print("time BF Minimal:", time_bf_muc_end - time_bf_muc_start, "s")
 
     return
 
