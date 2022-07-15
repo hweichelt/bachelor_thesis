@@ -1,5 +1,25 @@
 # Working-Diary
 
+`14.07.2022` : Donnerstag
+
++ Ideas:
+	+ **Idea** Modifying the Brute-Force Algorithm for all Minimal Unsat Cores
+		+ First of all we start the Brute Force search upside down (starting with the biggest size subsets)
+		+ Then when a subset is concluded to be unsatisfiable we apply the assumption marking algorithm on the `on_core` returned by clingo
+		+ The core returned here is minimal and can be added to the minimal core list.
+		+ For the assumption marking algorithm to work we assume that cores returned by clingo aren't multi unsat cores! TODO : **Q** : Check if that's true (susana, roland)
+		+ Additionally we also record clauses that were satisfiable.
+		+ Then when we solve for a smaller subset, we can check if it was part of an already satisfiable bigger subset and skip it.
+		+ IMPORTANT : This only works if our domain doesn't allow for a bigger assumption subset that's satisfiable to become unsat when assumptions are removed!
+			+ This could possibly exclude interesting domains : **Q** : Check with susana
+		+ ![[brute_force_bottom_up_sat_recording.png]]
+		+ In theory this could allow our approach to become much faster because many subsets can be skipped
+
+
+***
+
+`13.07.2022` : Mittwoch
+
 ***
 
 `08.07.2022` : Freitag
