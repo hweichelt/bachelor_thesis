@@ -12,7 +12,7 @@
 		+ Then when we solve for a smaller subset, we can check if it was part of an already satisfiable bigger subset and skip it.
 		+ IMPORTANT : This only works if our domain doesn't allow for a bigger assumption subset that's satisfiable to become unsat when assumptions are removed!
 			+ This could possibly exclude interesting domains : **Q** : Check with susana
-		+ ![[brute_force_bottom_up_sat_recording.png]]
+		+ ![](brute_force_bottom_up_sat_recording.png)
 		+ In theory this could allow our approach to become much faster because many subsets can be skipped
 
 
