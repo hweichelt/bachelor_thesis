@@ -1,5 +1,10 @@
 # Working-Diary
 
+`19.07.2022` : Dienstag
+
++ Ideas:
+	+ Maybe the iterative deletion algorithm can be salvaged to solve task 5 efficiently 🤔
+
 `14.07.2022` : Donnerstag
 
 + Ideas:
