@@ -26,15 +26,21 @@ In this task, the goal is to find every minimal unsatisfiable core contained ins
 ### T3 : Finding the Minimum Unsat Core of an Unsat Assumption Set
 This Task is highly interesting because its goal is to find the minimum unsatisfiable core of an unsatisfiable assumption set. The minimum unsatisfiable core is the smallest unsatisfiable core and thus optimizes the unatisfiability of the original assumption set with the least number of core assumptions. 
 
-### Algorithms:
+#### Algorithms:
 + [A3 : Brute-Force : Finding the Minimum Unsat Core](#a3--brute-force--finding-the-minimum-unsat-core)
 
-### T4 : Reducing an Unsat Core to any Minimal Unsat Core
-The task of reducing any unsatisfiable core to a minimal version of itself is also highly useful. Often its not really necessary to find the minimum unsatisfiable core,  but we only have to minimize a given unsatisfiable core. in most cases this can be done very efficiently but doesn't guarantee any minimality.
+### T4 : Reducing a Not-Multi-Unsat Core to any Minimal Unsat Core
+The task of reducing any unsatisfiable core to a minimal version of itself is also highly useful. Often its not really necessary to find the minimum unsatisfiable core, but we only have to minimize a given unsatisfiable core that's not a multi unsat core. In most cases this can be done very efficiently but doesn't guarantee any minimality.
 
-### Algorithms:
+#### Algorithms:
 + [A4 : Finding a Minimal Unsat Core using Assumption Marking](#a4--finding-a-minimal-unsat-core-using-assumption-marking)
 	+ Only works If the Unsat Core is not a multi unsatisfiable core!
+
+### T5 : Reducing a Multi-Unsat Core to any Minimal Unsat Core
+This task is very similar to [T4 : Reducing an Unsat Core to any Minimal Unsat Core](#t4--reducing-an-unsat-core-to-any-minimal-unsat-core), only that instead of a not multi unsat core we're now dealing with a multi unsat core. This makes the whole task harder and computationally costlier, but it can be applied way more generally.
+
+#### Algorithms:
++ `None implemented yet`
 
 ***
 

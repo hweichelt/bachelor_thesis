@@ -2,6 +2,13 @@
 
 ***
 
+`19.07.2022` : Dienstag
+
++ Ideas:
+	+ Maybe the iterative deletion algorithm can be salvaged to solve task 5 efficiently 🤔
+
+***
+
 `15.07.2022` : Freitag
 
 + Ideas:
