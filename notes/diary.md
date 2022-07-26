@@ -1,5 +1,16 @@
 # Working-Diary
 
+***
+
+`15.07.2022` : Freitag
+
++ Ideas:
+	+ The counterexample for the brute force improvement is: `abstract_multi_sat`
+	+ It's satisfiable when all the assumptions are met, but $a, b$ aren't possible together without $c$ also being true.
+	+ Maybe to combat this I have to look at the cores more as a collection of literals than a collection of assumptions. When I look at negation maybe it's possible to also include this case in the algorithm and make it work.
+
+***
+
 `14.07.2022` : Donnerstag
 
 + Ideas:
