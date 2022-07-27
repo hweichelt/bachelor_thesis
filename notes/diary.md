@@ -19,6 +19,10 @@
 			+ This could be useful because checking if one smaller subset is subset of a bigger set can also get quite computationally inefficient
 	+ Look at clingo-application-classes
 		+ To make my finished algorithms viable as command-line tools
+	+ Idea to use iterative deletion for Task 5:
+		+ ![](res/iterative_deletion_task_5.jpg)
+		+ This could work
+		+ The algorithm can probably be even more simplified by just starting with an empty probe set
 + TODO:
 	+ start with thinking of a basic thesis structure
 	+ maybe find a good LaTeX template
