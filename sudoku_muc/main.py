@@ -5,9 +5,9 @@ from minimal_unsatisfiable_core import Util, Container
 
 def muc_sudoku():
 
-    example_directory = "res/examples/sudoku/sudoku_multi_combined"
+    example_directory = "res/examples/abstract_multi_sat"
     visualization = "res/visualization/visualize_sudoku_core.lp"
-    render_sudoku = True
+    render_sudoku = False
 
     container_1 = Container(
         example_directory=example_directory
@@ -27,11 +27,19 @@ def muc_sudoku():
         else:
             Util.render_sudoku_with_core(container_1, core, visualization, name_format="1")
 
+    muc = container_1.get_any_minimal_uc_iterative_deletion()
+    print("MUC: ", [str(a) for a in muc])
+
+    if render_sudoku and not satisfiable:
+        Util.render_sudoku_with_core(container_1, muc, visualization, name_format="2")
+
+    return
+
     print("FIND MUC ON CORE : ASSUMPTION MARKING")
     muc_found, muc = container_1.get_muc_on_core_assumption_marking()
 
     if render_sudoku and not satisfiable:
-        Util.render_sudoku_with_core(container_1, muc, visualization, name_format="2")
+        Util.render_sudoku_with_core(container_1, muc, visualization, name_format="3")
 
     return
 

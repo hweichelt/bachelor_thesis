@@ -66,8 +66,6 @@ class Util(ABC):
         if program_string:
             program_string += "."
 
-        print(program_string)
-
         visualization_string = Util.read_in_asp_file(visualization_file)
 
         ctl.add("base", [], program_string)
@@ -301,6 +299,50 @@ class Container:
         unsatisfiable_cores = self.get_uc_all_brute_force()
         minimum = min(unsatisfiable_cores, key=lambda x: len(x))
         return [uc for uc in unsatisfiable_cores if len(uc) == len(minimum)]
+
+    def get_any_minimal_uc_iterative_deletion(self):
+        # This algorithm recycles the iterative deletion idea, and applies it now to try to solve task 5. We get an
+        # unsatisfiable core as input, that is possibly a multi unsat core, and want to extract any minimal unsat core.
+        # We now iteratively remove assumptions from the assumption set until it gets satisfiable. When it does that the
+        # last removed assumption is added to the probe set which is always checked together with the assumption set.
+        # We now restore the original assumption set, except for the just removed assumption, and start the process
+        # again. When the assumption set is completely empty and a solver call yields still unsatisfiable, we have
+        # reached the end and the probe set contains our found minimal unsat core.
+
+        # TODO : Work to be done !!!
+
+        satisfiable, _, core = self.solve(different_assumptions=[])
+        if not satisfiable:
+            # raise error if the encoding instance isn't satisfiable without assumptions
+            raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
+
+        satisfiable_with_empty_assumption_set = True
+
+        satisfiable, _, core = self.solve()
+        if satisfiable:
+            # return empty list if the encoding is already satisfiable with the assumptions
+            return []
+
+        assumption_set = list(self.assumptions)
+        probe_set = []
+
+        while satisfiable_with_empty_assumption_set:
+            for i in range(len(assumption_set)):
+                working_set = assumption_set[i+1:]
+                assumption = assumption_set[i]
+                sat, _, _ = self.solve(different_assumptions=working_set + probe_set)
+                if sat:
+                    # if probe + assumption set become sat : add last removed assumption to probe set and remove from
+                    # assumption set
+                    probe_set.append(assumption)
+                    assumption_set = [a for a in assumption_set if a != assumption]
+                    break
+
+            # end while loop if the encoding becomes unsatisfiable with the probe set
+            if not self.solve(different_assumptions=probe_set)[0]:
+                satisfiable_with_empty_assumption_set = False
+
+        return probe_set
 
     def __str__(self):
         out = repr(self) + "\n"
