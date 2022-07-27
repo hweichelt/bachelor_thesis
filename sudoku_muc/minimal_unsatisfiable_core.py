@@ -10,6 +10,7 @@ from clingraph.clingo_utils import ClingraphContext
 
 
 ASSUMPTION_SIGNATURE = "assume"
+INITIAL_SIGNATURE = "initial"
 SHOWN_SIGNATURES = ["solution", "initial"]
 
 
@@ -56,7 +57,8 @@ class Util(ABC):
         return out
 
     @staticmethod
-    def render_sudoku(symbol_list, visualization_file):
+    def render_sudoku(symbol_list, visualization_file, name_format=None):
+
         ctl = clingo.Control()
         fb = Factbase(prefix="viz_", default_graph="sudoku")
 
@@ -66,7 +68,7 @@ class Util(ABC):
 
         print(program_string)
 
-        visualization_string = Util.get_file_content_str(visualization_file)
+        visualization_string = Util.read_in_asp_file(visualization_file)
 
         ctl.add("base", [], program_string)
         ctl.add("base", [], visualization_string)
@@ -78,9 +80,22 @@ class Util(ABC):
         if solve_handle.get().satisfiable:
             fb.add_model(solve_handle.model())
             graphs = compute_graphs(fb)
-            render(graphs, format="png", view=True, engine="neato")
+            if name_format is not None:
+                render(graphs, format="png", view=True, engine="neato", name_format=name_format)
+            else:
+                render(graphs, format="png", view=True, engine="neato")
         else:
             print("WARNING: cannot render sudoku. Instance is unsatisfiable")
+
+    @staticmethod
+    def render_sudoku_with_core(container, core, visualization_file, name_format=None):
+        # this method is used to render an unsatisfiable sudoku instance with its unsat core. The Util.render_sudoku
+        # method is called after some preprocessing on the input data.
+        core_symbols = [clingo.parse_term(f"core({str(a)})") for a in core]
+        assumption_symbols = [clingo.parse_term(f"assume({str(a)})") for a in container.assumptions]
+        initial_symbols = [s.symbol for s in container.control.symbolic_atoms.by_signature(INITIAL_SIGNATURE, 3)]
+        symbol_list = assumption_symbols + core_symbols + initial_symbols
+        Util.render_sudoku(symbol_list, visualization_file, name_format=name_format)
 
 
 class Container:

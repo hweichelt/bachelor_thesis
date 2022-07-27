@@ -5,9 +5,9 @@ from minimal_unsatisfiable_core import Util, Container
 
 def muc_sudoku():
 
-    example_directory = "res/examples/abstract_multi_core"
-    visualization = "res/visualization/visualize_sudoku.lp"
-    render_sudoku = False
+    example_directory = "res/examples/sudoku/sudoku_multi_combined"
+    visualization = "res/visualization/visualize_sudoku_core.lp"
+    render_sudoku = True
 
     container_1 = Container(
         example_directory=example_directory
@@ -21,11 +21,19 @@ def muc_sudoku():
     print("model : ", model)
     print("core : ", core)
 
-    if satisfiable and render_sudoku:
-        Util.render_sudoku(model, visualization)
+    if render_sudoku:
+        if satisfiable:
+            Util.render_sudoku(model, visualization)
+        else:
+            Util.render_sudoku_with_core(container_1, core, visualization, name_format="1")
 
     print("FIND MUC ON CORE : ASSUMPTION MARKING")
     muc_found, muc = container_1.get_muc_on_core_assumption_marking()
+
+    if render_sudoku and not satisfiable:
+        Util.render_sudoku_with_core(container_1, muc, visualization, name_format="2")
+
+    return
 
     if not muc_found:
         print("MUC : Problem wasn't unsatisfiable to begin with, there is no minimal unsatisfiable core")
