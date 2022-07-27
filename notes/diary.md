@@ -2,6 +2,36 @@
 
 ***
 
+`27.07.2022` : Mittwoch
+
++ Infos:
+	+ Roland : We cannot assume that cores returned by clingo aren't Multi-Unsat-Cores !
+	+ This means that I have to rethink some approaches and this also makes the general idea of using Unsat cores to optimize an algorithm (i.e. Brute-Force) very unlikely, because firstly reducing them is also a big task in itself.
++ Organizational:
+	+ No meeting with Orkunt next week
+	+ No meeting with Susana on `10.08.2022`
++ Ideas:
+	+ When an atomic core is found :
+		+ Extending the assumption set with all the facts to find the corresponding fact that creates the atomic Unsat-Core.
+		+ This makes sense for Sudoku but not necessarily for other domains? 🤔
+	+ Brute-Force improvement:
+		+ Generating subsets to check next on demand, not all before
+			+ This could be useful because checking if one smaller subset is subset of a bigger set can also get quite computationally inefficient
+	+ Look at clingo-application-classes
+		+ To make my finished algorithms viable as command-line tools
++ TODO:
+	+ start with thinking of a basic thesis structure
+	+ maybe find a good LaTeX template
+	+ compile thesis name ideas and check them next week with Susana
+	+ fix my algorithm naming
++ Progress:
+	+ Added visualization of unsatisfiable instances:
+		+ All the core members are marked with red background 
+		+ This should also still work for satisfiable instances
+	+ Added some abstract examples
+
+***
+
 `19.07.2022` : Dienstag
 
 + Ideas:
@@ -37,6 +67,10 @@
 ***
 
 `13.07.2022` : Mittwoch
+
++ Progress:
+	+ Updated the Container class to work now with just a reference to a directory that follows the example template detailed in [examples](../sudoku_muc/res/examples)
+	+ Also added a recursive read-in function that includes the contents of with `#include` included files
 
 ***
 
