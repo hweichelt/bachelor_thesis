@@ -22,12 +22,14 @@ In this task, the goal is to find every minimal unsatisfiable core contained ins
 
 #### Algorithms:
 + [A2 : Brute-Force : Finding all Minimal Unsat Cores](#a2--brute-force--finding-all-minimal-unsat-cores)
++ [A5 : Improved Brute Force : Finding all Minimal Unsat Cores](#a5--improved-brute-force--finding-all-minimal-unsat-cores)
 
 ### T3 : Finding the Minimum Unsat Core of an Unsat Assumption Set
 This Task is highly interesting because its goal is to find the minimum unsatisfiable core of an unsatisfiable assumption set. The minimum unsatisfiable core is the smallest unsatisfiable core and thus optimizes the unatisfiability of the original assumption set with the least number of core assumptions. 
 
 #### Algorithms:
 + [A3 : Brute-Force : Finding the Minimum Unsat Core](#a3--brute-force--finding-the-minimum-unsat-core)
++ [A6 : Improved Brute Force : Finding all Minimum Unsat Cores](#a6--improved-brute-force--finding-all-minimum-unsat-cores)
 
 ### T4 : Reducing a Not-Multi-Unsat Core to any Minimal Unsat Core
 The task of reducing any unsatisfiable core to a minimal version of itself is also highly useful. Often its not really necessary to find the minimum unsatisfiable core, but we only have to minimize a given unsatisfiable core that's not a multi unsat core. In most cases this can be done very efficiently but doesn't guarantee any minimality.
@@ -37,7 +39,7 @@ The task of reducing any unsatisfiable core to a minimal version of itself is al
 	+ Only works If the Unsat Core is not a multi unsatisfiable core!
 
 ### T5 : Reducing a Multi-Unsat Core to any Minimal Unsat Core
-This task is very similar to [T4 : Reducing an Unsat Core to any Minimal Unsat Core](#t4--reducing-an-unsat-core-to-any-minimal-unsat-core), only that instead of a not multi unsat core we're now dealing with a multi unsat core. This makes the whole task harder and computationally costlier, but it can be applied way more generally.
+This task is very similar to [T4 : Reducing an Unsat Core to any Minimal Unsat Core](#t4--reducing-an-unsat-core-to-any-minimal-unsat-core), only that instead of a not multi unsatisfiable core we're now dealing with a multi unsatisfiable core. This makes the whole task harder and computationally costlier, but it can be applied way more generally.
 
 #### Algorithms:
 + `None implemented yet`
@@ -71,7 +73,7 @@ A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi
 ## Algorithms 
 
 ### A1 : Brute-Force : Finding all Unsat Cores
-`minimal_unsatisfiable_core.Container.get_uc_all_brute_force()`
+`minimal_unsatisfiable_core.Container.get_all_uc_brute_force()`
 
 | | |
 |:-|:-|
@@ -81,17 +83,17 @@ A multi unsatisfiable core is a non minimal unsatisfiable core $UC$ for $\varphi
 This algorithm is used to solve the task [T1 : Finding all Unsat Cores of an Assumption Set](#t1--finding-all-unsat-cores-of-an-assumption-set). It approaches the problem in a brute force way, by first computing all possible subsets of the assumption set (powerset), and then checks all of them whether they are an unsatisfiable core or not.
 
 ### A2 : Brute-Force : Finding all Minimal Unsat Cores
-`minimal_unsatisfiable_core.Container.get_all_minimal_ucs_brute_force()`
+`minimal_unsatisfiable_core.Container.get_all_minimal_uc_brute_force()`
 
 | | |
 |:-|:-|
 |**Input**| Assumption Set (Unsatisfiable Core)|
-|**Output**| A List of all minimal Unsatisfiable Core in the Assumption Set|
+|**Output**| List of all contained minimal Unsatisfiable Cores|
 
-This algorithm implements the brute force way of the task [T2 : Finding all Minimal Unsat Cores of an Unsat Assumption Set](#t2--finding-all-minimal-unsat-cores-of-an-unsat-assumption-set). It iterates over the whole powerset of the assumptions and checks whether the current set is an unsatisfiable core. If it is, it's stored in a list so that every future set that has an already found core as a subset can be skipped.
+This algorithm is used to solve the task [T2 : Finding all Minimal Unsat Cores of an Unsat Assumption Set](#t2--finding-all-minimal-unsat-cores-of-an-unsat-assumption-set). It first uses algorithm [A1 : Brute-Force : Finding all Unsat Cores](#a1--brute-force--finding-all-unsat-cores) to find all unsatisfiable cores for the assumption set (brute force), and then checks if any found core is a superset of another (possibly minimal) found core.
 
 ### A3 : Brute-Force : Finding the Minimum Unsat Core
-`minimal_unsatisfiable_core.Container.get_minimum_ucs_brute_force()`
+`minimal_unsatisfiable_core.Container.get_all_minimum_uc_brute_force()`
 
 | | |
 |:-|:-|
@@ -101,7 +103,7 @@ This algorithm implements the brute force way of the task [T2 : Finding all Mini
 This algorithm is used to solve the task [T3 : Finding the Minimum Unsat Core of an Unsat Assumption Set](#t3--finding-the-minimum-unsat-core-of-an-unsat-assumption-set). It first uses algorithm [A1 : Brute-Force : Finding all Unsat Cores](#a1--brute-force--finding-all-unsat-cores) to find all unsatisfiable cores for the assumption set (brute force), and then searches for the unsatisfiable core of the smallest size.
 
 ### A4 : Finding a Minimal Unsat Core using Assumption Marking
-`minimal_unsatisfiable_core.Container.get_muc_on_core_assumption_marking()`
+`minimal_unsatisfiable_core.Container.get_any_minimal_uc_assumption_marking()`
 
 | | |
 |:-|:-|
@@ -110,3 +112,23 @@ This algorithm is used to solve the task [T3 : Finding the Minimum Unsat Core of
 
 This algorithm is used to solve the task [T4 : Reducing an Unsat Core to any Minimal Unsat Core](#t4--reducing-an-unsat-core-to-any-minimal-unsat-core). It is important to note though, that the algorithm only works on assumption sets, that aren't multi unsatisfiable cores.
 It works by iterating through the assumption set and in each step marking a different assumption. We then try to solve the original problem with the assumption set excluding the marked assumption. If it gets satisfiable this way, the marked assumption is added to the minimal core members. This continues until all assumptions have been checked.
+
+### A5 : Improved Brute Force : Finding all Minimal Unsat Cores
+`minimal_unsatisfiable_core.Container.get_all_minimal_uc_improved_brute_force()`
+
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| A List of all minimal Unsatisfiable Core in the Assumption Set|
+
+This algorithm implements an improved brute force way to solve the task [T2 : Finding all Minimal Unsat Cores of an Unsat Assumption Set](#t2--finding-all-minimal-unsat-cores-of-an-unsat-assumption-set). It iterates over the whole powerset of the assumptions and checks whether the current set is an unsatisfiable core. If it is, it's stored in a list so that every future set that has an already found core as a subset can be skipped.
+
+### A6 : Improved Brute Force : Finding all Minimum Unsat Cores
+`minimal_unsatisfiable_core.Container.get_all_minimum_uc_improved_brute_force()`
+
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| A List of all minimum Unsatisfiable Core in the Assumption Set|
+
+This algorithm implements an improved brute force way to solve the task [T3 : Finding the Minimum Unsat Core of an Unsat Assumption Set](#t3--finding-the-minimum-unsat-core-of-an-unsat-assumption-set). It iterates over the powerset of the assumptions and checks whether the current set is an unsatisfiable core. Because the powerset is ordered by subset-size, if any core is found it is automatically a minimal unsatisfiable core. When this happens the size of the unsatisfiable core is stored, and only the remaining subsets of the same size are checked for unsatisfiable cores. If this is finished, a list containing all minimum unsatisfiable cores is returned.
