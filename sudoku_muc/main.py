@@ -4,8 +4,30 @@ from minimal_unsatisfiable_core import Util, Container
 
 
 def muc_sudoku():
+    single_example = [
+        "res/examples/sudoku/sudoku_multi_combined"
+    ]
+    abstract_examples = [
+        "res/examples/abstract_multi_sat",
+        "res/examples/abstract_multi_core_medium",
+        "res/examples/abstract_multi_core_intersecting",
+    ]
+    sudoku_examples = [
+        "res/examples/sudoku/sudoku_valid",
+        "res/examples/sudoku/sudoku_atomic",
+        "res/examples/sudoku/sudoku_internal",
+        "res/examples/sudoku/sudoku_multi_atomic",
+        "res/examples/sudoku/sudoku_multi_combined",
+    ]
+    all_examples = abstract_examples + sudoku_examples
 
-    example_directory = "res/examples/abstract_multi_sat"
+    for example in single_example:
+        print("\n" + "="*40, ">", example, "<", "="*40, "\n")
+        muc_sudoku_on_example(example)
+
+
+def muc_sudoku_on_example(example_directory):
+
     visualization = "res/visualization/visualize_sudoku_core.lp"
     render_sudoku = False
 
@@ -20,6 +42,14 @@ def muc_sudoku():
     print("result : ", ["UNSAT", "SAT"][satisfiable])
     print("model : ", model)
     print("core : ", core)
+
+    mucs = container_1.get_all_minimal_uc_brute_force()
+    print("MUCS: ", [[str(a) for a in muc] for muc in mucs])
+
+    minucs = container_1.get_all_minimum_uc_improved_brute_force()
+    print("MINIMUM UCS: ", [[str(a) for a in muc] for muc in minucs])
+
+    return
 
     if render_sudoku:
         if satisfiable:
@@ -36,7 +66,7 @@ def muc_sudoku():
     return
 
     print("FIND MUC ON CORE : ASSUMPTION MARKING")
-    muc_found, muc = container_1.get_muc_on_core_assumption_marking()
+    muc_found, muc = container_1.get_any_minimal_uc_assumption_marking()
 
     if render_sudoku and not satisfiable:
         Util.render_sudoku_with_core(container_1, muc, visualization, name_format="3")
@@ -49,7 +79,7 @@ def muc_sudoku():
         print(f"MUC : {muc}")
 
     time_bf_start = time.time()
-    ucs = container_1.get_uc_all_brute_force()
+    ucs = container_1.get_all_uc_brute_force()
     time_bf_end = time.time()
 
     time_bf_muc_start = time.time()
