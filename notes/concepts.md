@@ -44,6 +44,12 @@ This task is very similar to [T4 : Reducing an Unsat Core to any Minimal Unsat C
 #### Algorithms:
 + `None implemented yet`
 
+### T6 : Reducing a Multi-Unsat Core to any Minimum Unsat Core
+This task is very similar to [T5 : Reducing a Multi-Unsat Core to any Minimal Unsat Core](t5--reducing-a-multi-unsat-core-to-any-minimal-unsat-core), just that instead of any minimal unsatisfiable core, we want to get any of the minimum unsatisfiable cores of the problem. This makes the task in theory way more specific and harder than the fifth task.
+
+#### Algorithms:
++ `None implemented yet`
+
 ***
 
 ## Definitions
@@ -132,3 +138,25 @@ This algorithm implements an improved brute force way to solve the task [T2 : Fi
 |**Output**| A List of all minimum Unsatisfiable Core in the Assumption Set|
 
 This algorithm implements an improved brute force way to solve the task [T3 : Finding the Minimum Unsat Core of an Unsat Assumption Set](#t3--finding-the-minimum-unsat-core-of-an-unsat-assumption-set). It iterates over the powerset of the assumptions and checks whether the current set is an unsatisfiable core. Because the powerset is ordered by subset-size, if any core is found it is automatically a minimal unsatisfiable core. When this happens the size of the unsatisfiable core is stored, and only the remaining subsets of the same size are checked for unsatisfiable cores. If this is finished, a list containing all minimum unsatisfiable cores is returned.
+
+### A7 : Improved Brute Force : Finding any Minimum Unsat Core
+`minimal_unsatisfiable_core.Container.get_any_minimum_uc_improved_brute_force()`
+
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| Any Minimal Unsatisfiable Core in the Assumption Set|
+
+This algorithm implements an improved brute force way to solve the task [T6 : Reducing a Multi-Unsat Core to any Minimum Unsat Core](t6--reducing-a-multi-unsat-core-to-any-minimum-unsat-core) and thereby also solves task [T5 : Reducing a Multi-Unsat Core to any Minimal Unsat Core](t5--reducing-a-multi-unsat-core-to-any-minimal-unsat-core). The algorithm starts to iterate over the whole powerset of the multi unsatisfiable core, starting with the smallest subsets ascending. When the first unsatisfiable core is found, the algorithm returns it, because by definition, it has to be one of the minimum cores of the unsatisfiable core.
+
+### A8 : Iterative Deletion : Finding any Minimal Unsat Core
+`minimal_unsatisfiable_core.Container.get_any_minimal_uc_iterative_deletion()`
+
+| | |
+|:-|:-|
+|**Input**| Assumption Set (Unsatisfiable Core)|
+|**Output**| Any Minimal Unsatisfiable Core in the Assumption Set|
+
+This algorithm salvages the iterative deletion idea and applies it to finding any minimal unsatisfiable core of an assumption set. This approach is especially useful, because it should be able to solve task [T5 : Reducing a Multi-Unsat Core to any Minimal Unsat Core](t5--reducing-a-multi-unsat-core-to-any-minimal-unsat-core) and with that be faster than the brute force approach.
+
+**TODO : Still has to be tested, to see if it really always works !**

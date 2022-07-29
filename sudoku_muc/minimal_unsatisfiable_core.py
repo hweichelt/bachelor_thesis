@@ -254,6 +254,21 @@ class Container:
 
         return minimum_unsatisfiable_cores
 
+    def get_any_minimum_uc_improved_brute_force(self):
+        # This algorithm implements an improved brute force way to solve the task 6 and thereby also solves task 5.
+        # The algorithm starts to iterate over the whole powerset of the multi unsatisfiable core, starting with the
+        # smallest subsets ascending. When the first unsatisfiable core is found, the algorithm returns it, because by
+        # definition, it has to be one of the minimum cores of the unsatisfiable core.
+
+        powerset = chain.from_iterable(combinations(self.assumptions, r) for r in range(len(self.assumptions) + 1))
+
+        for assumption_set in powerset:
+            sat, _, _ = self.solve(different_assumptions=assumption_set)
+            if not sat:
+                return assumption_set
+
+        return None
+
     def get_any_minimal_uc_iterative_deletion(self):
         # This algorithm recycles the iterative deletion idea, and applies it now to try to solve task 5. We get an
         # unsatisfiable core as input, that is possibly a multi unsat core, and want to extract any minimal unsat core.
