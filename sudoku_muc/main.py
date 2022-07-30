@@ -1,11 +1,13 @@
 import clingo
 import time
+import signal
 from minimal_unsatisfiable_core import Util, Container
+
 
 
 def muc_sudoku():
     single_example = [
-        "res/examples/sudoku/sudoku_multi_combined"
+        "res/examples/abstract_multi_core_big"
     ]
     abstract_examples = [
         "res/examples/abstract_multi_sat",
@@ -26,6 +28,11 @@ def muc_sudoku():
         muc_sudoku_on_example(example)
 
 
+def timeout_handler(signum, frame):
+    print("TIME IS OVER")
+    raise Exception("OUT OF TIME")
+
+
 def muc_sudoku_on_example(example_directory):
 
     visualization = "res/visualization/visualize_sudoku_core.lp"
@@ -43,11 +50,28 @@ def muc_sudoku_on_example(example_directory):
     print("model : ", model)
     print("core : ", core)
 
-    mucs = container_1.get_all_minimal_uc_brute_force()
-    print("MUCS: ", [[str(a) for a in muc] for muc in mucs])
+    print("=====> BRUTE FORCE ALGORITHMS <=====")
 
-    minucs = container_1.get_all_minimum_uc_improved_brute_force()
-    print("MINIMUM UCS: ", [[str(a) for a in muc] for muc in minucs])
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(10)
+
+    try:
+        t_start = time.time()
+        minimal_ucs = container_1.get_all_minimal_uc_brute_force()
+        t_end = time.time()
+        print(f"[time={ '{:.5f}'.format(t_end - t_start) }s]", "MINIMAL UCS (Brute Force): ", [[str(a) for a in muc] for muc in minimal_ucs])
+    except Exception as e:
+        print(e)
+
+    signal.alarm(10)
+
+    try:
+        t_start = time.time()
+        any_minimal_uc = container_1.get_any_minimal_uc_iterative_deletion()
+        t_end = time.time()
+        print(f"[time={ '{:.5f}'.format(t_end - t_start) }s]", "ANY MINIMAL UC (Iterative Deletion): ", [str(a) for a in any_minimal_uc])
+    except Exception as e:
+        print(e)
 
     return
 
