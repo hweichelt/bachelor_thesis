@@ -209,8 +209,11 @@ class Container:
         # smallest core within the set of ucs that is returned
 
         unsatisfiable_cores = self.get_all_uc_brute_force()
-        minimum = min(unsatisfiable_cores, key=lambda x: len(x))
-        return [uc for uc in unsatisfiable_cores if len(uc) == len(minimum)]
+        if unsatisfiable_cores:
+            minimum = min(unsatisfiable_cores, key=lambda x: len(x))
+            return [uc for uc in unsatisfiable_cores if len(uc) == len(minimum)]
+
+        return []
 
     def get_all_minimal_uc_improved_brute_force(self):
         # This algorithm implements the brute force way of finding all minimal unsatisfiable cores of an assumption set
@@ -267,7 +270,7 @@ class Container:
             if not sat:
                 return assumption_set
 
-        return None
+        return []
 
     def get_any_minimal_uc_iterative_deletion(self):
         # This algorithm recycles the iterative deletion idea, and applies it now to try to solve task 5. We get an
