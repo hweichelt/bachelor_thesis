@@ -81,47 +81,37 @@ def muc_sudoku_on_example(example_directory):
 
     runtime, result = measure_function(container_1.get_all_uc_brute_force, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
-          f"{len(result)} cores" if result is not None else "TIMEOUT")
+          f"{len(result)} cores" if runtime != -1 else "TIMEOUT")
 
     print("\n===> TASK T2 )")
 
     runtime, result = measure_function(container_1.get_all_minimal_uc_brute_force, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
 
     runtime, result = measure_function(container_1.get_all_minimal_uc_improved_brute_force, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Improved Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
 
     print("\n===> TASK T3 )")
 
     runtime, result = measure_function(container_1.get_all_minimum_uc_brute_force, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
 
     runtime, result = measure_function(container_1.get_all_minimum_uc_improved_brute_force, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Improved Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
 
     print("\n===> TASK T5 )")
 
     runtime, result = measure_function(container_1.get_any_minimum_uc_improved_brute_force, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ANY MINIMUM UCS (Improved Brute Force): ",
-          [str(a) for a in result] if result is not None else "TIMEOUT")
+          [str(a) for a in result] if runtime != -1 else "TIMEOUT")
 
     runtime, result = measure_function(container_1.get_any_minimal_uc_iterative_deletion, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ANY MINIMAL UCS (Iterative Deletion): ",
-          [str(a) for a in result] if result is not None else "TIMEOUT")
-
-    # signal.alarm(10)
-    #
-    # try:
-    #     t_start = time.time()
-    #     any_minimal_uc = container_1.get_any_minimal_uc_iterative_deletion()
-    #     t_end = time.time()
-    #     print(f"[time={ '{:.5f}'.format(t_end - t_start) }s]", "ANY MINIMAL UC (Iterative Deletion): ", [str(a) for a in any_minimal_uc])
-    # except Exception as e:
-    #     print(e)
+          [str(a) for a in result] if runtime != -1 else "TIMEOUT")
 
     return
 
@@ -144,47 +134,6 @@ def muc_sudoku_on_example(example_directory):
 
     if render_sudoku and not satisfiable:
         Util.render_sudoku_with_core(container_1, muc, visualization, name_format="3")
-
-    return
-
-    if not muc_found:
-        print("MUC : Problem wasn't unsatisfiable to begin with, there is no minimal unsatisfiable core")
-    else:
-        print(f"MUC : {muc}")
-
-    time_bf_start = time.time()
-    ucs = container_1.get_all_uc_brute_force()
-    time_bf_end = time.time()
-
-    time_bf_muc_start = time.time()
-    mucs = container_1.get_all_minimal_ucs_brute_force()
-    time_bf_muc_end = time.time()
-
-    print("time BF All:", time_bf_end - time_bf_start, "s")
-    print("time BF Minimal:", time_bf_muc_end - time_bf_muc_start, "s")
-
-    return
-
-    print("FIND UC ON ASSUMPTION SET : ITERATIVE DELETION")
-
-    uc = container_1.get_uc_iterative_deletion()
-    if uc:
-        print("UC: ", [str(a) for a in uc])
-    else:
-        print("No UC was found")
-
-    mucs = container_1.get_muc_all_iterative_deletion()
-    if mucs:
-        print("MUCs: \n", "\n".join(["\t+ " + " ".join([str(a) for a in core]) for core in mucs]))
-    else:
-        print("No MUCs were found")
-
-    print("FIND ALL UCS : BRUTE FORCE APPROACH")
-
-    ucs = container_1.get_uc_all_brute_force()
-    print("Cores Found (Cores/|Assumption-Powerset|):", len(ucs), "/", 2**len(container_1.assumptions))
-    minimum_ucs = container_1.get_minimum_ucs_brute_force()
-    print("Minimum UCs Found: ", minimum_ucs)
 
 
 if __name__ == '__main__':
