@@ -3,6 +3,7 @@ import time
 import signal
 from minimal_unsatisfiable_core import Util, Container
 
+TIMEOUT = 10
 
 
 def muc_sudoku():
@@ -29,8 +30,30 @@ def muc_sudoku():
 
 
 def timeout_handler(signum, frame):
-    print("TIME IS OVER")
     raise Exception("OUT OF TIME")
+
+
+def measure_function(function, args=None, kwargs=None, timeout=10, verbose=0):
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
+    if timeout <= 0:
+        raise ValueError("timeout has to be a positive number greater than 0")
+
+    # start countdown for timeout
+    signal.alarm(timeout)
+    try:
+        t_start = time.time()
+        result = function(*args, **kwargs)
+        t_end = time.time()
+        # end countdown for timeout if function was able to complete in time
+        signal.alarm(0)
+        return t_end - t_start, result
+    except Exception as e:
+        if verbose > 0:
+            print(e)
+        return -1, None
 
 
 def muc_sudoku_on_example(example_directory):
@@ -50,28 +73,55 @@ def muc_sudoku_on_example(example_directory):
     print("model : ", model)
     print("core : ", core)
 
-    print("=====> BRUTE FORCE ALGORITHMS <=====")
+    print("\n=====> BENCHMARK ALGORITHM PERFORMANCE <=====")
 
     signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(10)
 
-    try:
-        t_start = time.time()
-        minimal_ucs = container_1.get_all_minimal_uc_brute_force()
-        t_end = time.time()
-        print(f"[time={ '{:.5f}'.format(t_end - t_start) }s]", "MINIMAL UCS (Brute Force): ", [[str(a) for a in muc] for muc in minimal_ucs])
-    except Exception as e:
-        print(e)
+    print("\n===> TASK T1 )")
 
-    signal.alarm(10)
+    runtime, result = measure_function(container_1.get_all_uc_brute_force, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
+          f"{len(result)} cores" if result is not None else "TIMEOUT")
 
-    try:
-        t_start = time.time()
-        any_minimal_uc = container_1.get_any_minimal_uc_iterative_deletion()
-        t_end = time.time()
-        print(f"[time={ '{:.5f}'.format(t_end - t_start) }s]", "ANY MINIMAL UC (Iterative Deletion): ", [str(a) for a in any_minimal_uc])
-    except Exception as e:
-        print(e)
+    print("\n===> TASK T2 )")
+
+    runtime, result = measure_function(container_1.get_all_minimal_uc_brute_force, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
+          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+
+    runtime, result = measure_function(container_1.get_all_minimal_uc_improved_brute_force, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Improved Brute Force): ",
+          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+
+    print("\n===> TASK T3 )")
+
+    runtime, result = measure_function(container_1.get_all_minimum_uc_brute_force, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Brute Force): ",
+          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+
+    runtime, result = measure_function(container_1.get_all_minimum_uc_improved_brute_force, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Improved Brute Force): ",
+          [[str(a) for a in muc] for muc in result] if result is not None else "TIMEOUT")
+
+    print("\n===> TASK T5 )")
+
+    runtime, result = measure_function(container_1.get_any_minimum_uc_improved_brute_force, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ANY MINIMUM UCS (Improved Brute Force): ",
+          [str(a) for a in result] if result is not None else "TIMEOUT")
+
+    runtime, result = measure_function(container_1.get_any_minimal_uc_iterative_deletion, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ANY MINIMAL UCS (Iterative Deletion): ",
+          [str(a) for a in result] if result is not None else "TIMEOUT")
+
+    # signal.alarm(10)
+    #
+    # try:
+    #     t_start = time.time()
+    #     any_minimal_uc = container_1.get_any_minimal_uc_iterative_deletion()
+    #     t_end = time.time()
+    #     print(f"[time={ '{:.5f}'.format(t_end - t_start) }s]", "ANY MINIMAL UC (Iterative Deletion): ", [str(a) for a in any_minimal_uc])
+    # except Exception as e:
+    #     print(e)
 
     return
 
