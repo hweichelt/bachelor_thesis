@@ -2,6 +2,34 @@
 
 ***
 
+`30.07.2022` : Samstag
+
++ Progress : 
+	+ Added a way to benchmark my algorithms :
+		+ They can now be timed with the function `measure_function()` and it is also possible to set a `TIMEOUT` time, that kills the function if it exceeds a certain time limit.
+	+ Did a bit of cleanup in main.py and also fixed some algorithm return values for a satisfiable instance
++ TODO :
+	+ Add a way to benchmark automatically completely with result checking
+		+ Therefore store all possible results as a `.csv` or `.json` file for each example
+		+ Maybe a file with all minimum cores and one with all minimal cores? 🤔
+		+ Could also do a file with all unsatisfiable cores, but that could get pretty big 🤔
+
+***
+
+`29.07.2022` : Freitag
+
++ Progress :
+	+ Did a big cleanup of algorithm names
+	+ Added a few algorithm implementations that were mentioned but not implemented yet
+		+ Also added documentation for them in [concepts](concepts.md)
+	+ Added a way to test multiple examples in a row 
+	+ Some code cleanup :
+		+ removing iterative deletion algorithms for task 2, because they aren't working
+	+ Added a new BIG abstract example, that is the first example my laptop gets sweaty with when using the brute force approaches
+		+ The only algorithm that was still able to perform was the new iterative deletion algorithm for task 5 (possibly also the assumption marking algorithm but i didn't test it yet, also don't know if it is applicable here)
+
+***
+
 `27.07.2022` : Mittwoch
 
 + Infos:
