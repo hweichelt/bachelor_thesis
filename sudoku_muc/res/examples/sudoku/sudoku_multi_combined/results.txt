@@ -1,0 +1,13 @@
+{
+	"minimal": [
+		["solution(5,5,7)"],
+		["solution(1,7,6)"],
+		["solution(9,1,7)"],
+		["solution(2,7,4)", "solution(9,7,4)"]
+	],
+	"minimum": [
+		["solution(5,5,7)"],
+		["solution(1,7,6)"],
+		["solution(9,1,7)"]
+	]
+}

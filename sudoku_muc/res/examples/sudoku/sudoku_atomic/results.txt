@@ -1,0 +1,8 @@
+{
+	"minimal": [
+		["solution(5,5,7)"]
+	],
+	"minimum": [
+		["solution(5,5,7)"]
+	]
+}
