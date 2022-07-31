@@ -1,5 +1,6 @@
 import os
 import random
+import json
 from abc import ABC, abstractmethod
 from itertools import chain, combinations
 
@@ -56,6 +57,13 @@ class Util(ABC):
                 else:
                     out += line
         return out
+
+    @staticmethod
+    def read_dictionary_from_file(path):
+        with open(path) as f:
+            data = f.read()
+        dictionary = json.loads(data)
+        return dictionary
 
     @staticmethod
     def render_sudoku(symbol_list, visualization_file, name_format=None):
