@@ -2,6 +2,28 @@
 
 ***
 
+`03.08.2022` : Mittwoch
+
++ Infos:
+	+ Multi Sat Problems can be disregarded because they are satisfiable in the normal case if all assumptions are assumed
++ TODO:
+	+ Look into negative assumptions ex.: `a, not b.`
+		+ Does this change anything in how I should approach these algorithms, or even makes them invalid?
+	+ Randomly generated benchmarks
+		+ Iteratively generating bigger cores:
+			+ Multi Core that contains 1 random core
+			+ Multi Core that contains 2 random cores
+			+ ...
+	+ Also Look for standard examples that might be used for benchmarks in ASP
+	+ For Benchmarking also track the reduction of core size as a measure in addition to to solving time
+	+ For Thesis do a pseudo-code implementation of the iterative Deletion aglorithm
+	+ Proving iterative Deletion
+		+ Firstly looking for other papers that may have mentioned the iterative deletion approach
+	+ For application class:
+		+ Define a flag that starts with the clingo `on_core`
+
+***
+
 `30.07.2022` : Samstag
 
 + Progress : 
