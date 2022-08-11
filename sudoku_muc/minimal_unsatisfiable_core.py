@@ -322,6 +322,37 @@ class Container:
 
         return probe_set
 
+    def get_any_minimal_uc_iterative_deletion_improved(self):
+        # Just like the iterative deletion algorithm for task 5, but after a core member is found, this algorithm just
+        # checks the remaining assumptions, and doesn't start from the beginning again
+        # Based on orkunt's idea, to skip unnecessary solving steps
+
+        satisfiable, _, core = self.solve(different_assumptions=[])
+        if not satisfiable:
+            # raise error if the encoding instance isn't satisfiable without assumptions
+            raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
+
+        satisfiable, _, core = self.solve()
+        if satisfiable:
+            # return empty list if the encoding is already satisfiable with the assumptions
+            return []
+
+        assumption_set = list(self.assumptions)
+        probe_set = []
+
+        for i, assumption in enumerate(assumption_set):
+            working_set = assumption_set[i+1:]
+            sat, _, _ = self.solve(different_assumptions=working_set + probe_set)
+            if sat:
+                # if probe + assumption set become sat : add last removed assumption to probe set
+                probe_set.append(assumption)
+
+                # end for-loop if the encoding becomes unsatisfiable with the new probe set
+                if not self.solve(different_assumptions=probe_set)[0]:
+                    break
+
+        return probe_set
+
     def __str__(self):
         out = repr(self) + "\n"
         out += "\t<assumptions>\n"

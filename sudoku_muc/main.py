@@ -8,12 +8,13 @@ TIMEOUT = 10
 
 def muc_sudoku():
     single_example = [
-        "res/examples/sudoku/sudoku_valid"
+        "res/examples/abstract_multi_core_big"
     ]
     abstract_examples = [
         "res/examples/abstract_multi_sat",
         "res/examples/abstract_multi_core_medium",
         "res/examples/abstract_multi_core_intersecting",
+        "res/examples/abstract_multi_core_big"
     ]
     sudoku_examples = [
         "res/examples/sudoku/sudoku_valid",
@@ -24,7 +25,7 @@ def muc_sudoku():
     ]
     all_examples = abstract_examples + sudoku_examples
 
-    for example in single_example:
+    for example in all_examples:
         print("\n" + "="*40, ">", example, "<", "="*40, "\n")
         muc_sudoku_on_example(example)
 
@@ -101,35 +102,35 @@ def muc_sudoku_on_example(example_directory):
 
     signal.signal(signal.SIGALRM, timeout_handler)
 
-    print("\n===> TASK T1 )")
-
-    runtime, result = measure_function(container_1.get_all_uc_brute_force, timeout=TIMEOUT)
-    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
-          f"{len(result)} cores" if runtime != -1 else "TIMEOUT")
-
-    print("\n===> TASK T2 )")
-
-    runtime, result = measure_function(container_1.get_all_minimal_uc_brute_force, timeout=TIMEOUT)
-    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
-    print("-"*14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
-
-    runtime, result = measure_function(container_1.get_all_minimal_uc_improved_brute_force, timeout=TIMEOUT)
-    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Improved Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
-    print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
-
-    print("\n===> TASK T3 )")
-
-    runtime, result = measure_function(container_1.get_all_minimum_uc_brute_force, timeout=TIMEOUT)
-    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
-    print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimum"))])
-
-    runtime, result = measure_function(container_1.get_all_minimum_uc_improved_brute_force, timeout=TIMEOUT)
-    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Improved Brute Force): ",
-          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
-    print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimum"))])
+    # print("\n===> TASK T1 )")
+    #
+    # runtime, result = measure_function(container_1.get_all_uc_brute_force, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
+    #       f"{len(result)} cores" if runtime != -1 else "TIMEOUT")
+    #
+    # print("\n===> TASK T2 )")
+    #
+    # runtime, result = measure_function(container_1.get_all_minimal_uc_brute_force, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Brute Force): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-"*14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
+    #
+    # runtime, result = measure_function(container_1.get_all_minimal_uc_improved_brute_force, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Improved Brute Force): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
+    #
+    # print("\n===> TASK T3 )")
+    #
+    # runtime, result = measure_function(container_1.get_all_minimum_uc_brute_force, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Brute Force): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimum"))])
+    #
+    # runtime, result = measure_function(container_1.get_all_minimum_uc_improved_brute_force, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMUM UCS (Improved Brute Force): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimum"))])
 
     print("\n===> TASK T5 )")
 
@@ -140,6 +141,11 @@ def muc_sudoku_on_example(example_directory):
 
     runtime, result = measure_function(container_1.get_any_minimal_uc_iterative_deletion, timeout=TIMEOUT)
     print(f"[time={'{:.5f}'.format(runtime)}s]", "ANY MINIMAL UCS (Iterative Deletion): ",
+          [str(a) for a in result] if runtime != -1 else "TIMEOUT")
+    print("-" * 14 + ">", ("INVALID", "VALID")[check_result_any(result, results.get("minimal"))])
+
+    runtime, result = measure_function(container_1.get_any_minimal_uc_iterative_deletion_improved, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", "ANY MINIMAL UCS (Iterative Deletion Improved): ",
           [str(a) for a in result] if runtime != -1 else "TIMEOUT")
     print("-" * 14 + ">", ("INVALID", "VALID")[check_result_any(result, results.get("minimal"))])
 
