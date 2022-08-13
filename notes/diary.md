@@ -2,6 +2,44 @@
 
 ***
 
+`10.08.2022` : Samstag
+
++ Progress :
+	+ Implemented orkunt's idea for improving the performance of the iterative deletion algorithm for Task 5
+		+ it seems to work fine!
+	+ Implemented Idea to solve Task 2 with iterative Deletion
+		+ This idea is basically applying iterative deletion multiple times on a selected subset of subset permutations derived from the found minimal cores on the way
+		1. The first queue Element is popped
+		3. Iterative Deletion is applied on the difference of the assumption set minus the popped assumption from the queue
+		4. The found `muc` is stored 
+			1. If the `muc` is atomic its assumption is removed from the assumption set
+				+ The checked list is reset to an empty list
+			+ all assumptions contained in `muc` (that aren't yet in the checked list) are added to the queue and marked as checked
++ TODO :
+	+ Do a pseudocode implementation
+	+ Visualize one example
+	+ Ask susana what she thinks about it
+
+***
+
+`10.08.2022` : Donnerstag
+
++ Ideas:
+	+ Removing Atomic Cores:
+		+ When thinking about an algorithm to find all minimal cores atomic cores seem to get in the way
+		+ It should possible to remove them from the assumption set, once they are identified, because, via definition, there cant be any other minimal core that contains an atomic core!
+		+ so a core that contains multiple intersecting cores linke $b, c$ and $b,d$ isn't possible with an atomic core assumption
+	+ Maybe with this removing an iterative deletion approach for all minimal cores could work? 🤔
+
+***
+
+`10.08.2022` : Mittwoch
+
++ Ideas:
+	+ Worst-Case for Iterative Deletion
+
+***
+
 `03.08.2022` : Mittwoch
 
 + Infos:
