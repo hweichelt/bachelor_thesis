@@ -280,7 +280,7 @@ class Container:
 
         return []
 
-    def get_any_minimal_uc_iterative_deletion(self):
+    def get_any_minimal_uc_iterative_deletion(self, different_assumptions=None):
         # This algorithm recycles the iterative deletion idea, and applies it now to try to solve task 5. We get an
         # unsatisfiable core as input, that is possibly a multi unsat core, and want to extract any minimal unsat core.
         # We now iteratively remove assumptions from the assumption set until it gets satisfiable. When it does that the
@@ -296,12 +296,18 @@ class Container:
 
         satisfiable_with_empty_assumption_set = True
 
-        satisfiable, _, core = self.solve()
+        # check if the encoding with all the assumptions is unsatisfiable
+        if different_assumptions is None:
+            satisfiable, _, core = self.solve()
+        else:
+            satisfiable, _, core = self.solve(different_assumptions=different_assumptions)
+
         if satisfiable:
             # return empty list if the encoding is already satisfiable with the assumptions
             return []
 
-        assumption_set = list(self.assumptions)
+        # use container assumptions by default or different_assumptions
+        assumption_set = different_assumptions if different_assumptions is not None else list(self.assumptions)
         probe_set = []
 
         while satisfiable_with_empty_assumption_set:
@@ -322,7 +328,7 @@ class Container:
 
         return probe_set
 
-    def get_any_minimal_uc_iterative_deletion_improved(self):
+    def get_any_minimal_uc_iterative_deletion_improved(self, different_assumptions=None):
         # Just like the iterative deletion algorithm for task 5, but after a core member is found, this algorithm just
         # checks the remaining assumptions, and doesn't start from the beginning again
         # Based on orkunt's idea, to skip unnecessary solving steps
@@ -332,12 +338,18 @@ class Container:
             # raise error if the encoding instance isn't satisfiable without assumptions
             raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
 
-        satisfiable, _, core = self.solve()
+        # check if the encoding with all the assumptions is unsatisfiable
+        if different_assumptions is None:
+            satisfiable, _, core = self.solve()
+        else:
+            satisfiable, _, core = self.solve(different_assumptions=different_assumptions)
+
         if satisfiable:
             # return empty list if the encoding is already satisfiable with the assumptions
             return []
 
-        assumption_set = list(self.assumptions)
+        # use container assumptions by default or different_assumptions
+        assumption_set = different_assumptions if different_assumptions is not None else list(self.assumptions)
         probe_set = []
 
         for i, assumption in enumerate(assumption_set):
@@ -352,6 +364,66 @@ class Container:
                     break
 
         return probe_set
+
+    def get_all_minimal_uc_iterative_deletion(self, different_assumptions=None):
+        satisfiable, _, core = self.solve(different_assumptions=[])
+        if not satisfiable:
+            # raise error if the encoding instance isn't satisfiable without assumptions
+            raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
+
+        # check if the encoding with all the assumptions is unsatisfiable
+        if different_assumptions is None:
+            satisfiable, _, core = self.solve()
+        else:
+            satisfiable, _, core = self.solve(different_assumptions=different_assumptions)
+
+        if satisfiable:
+            # return empty list if the encoding is already satisfiable with the assumptions
+            return []
+
+        # use container assumptions by default or different_assumptions
+        assumption_set = different_assumptions if different_assumptions is not None else list(self.assumptions)
+
+        start_muc = self.get_any_minimal_uc_iterative_deletion_improved()
+
+        minimal_cores = [start_muc]
+        checked_assumptions = []
+        queue = [a for a in start_muc]
+
+        # TODO : Transform queue to assumption queue and not core queue :
+        #  This also gets rid of the annoying nested loop
+
+        while queue:
+            print("\nminimal_cores :", [[str(a) for a in c] for c in minimal_cores])
+            print("queue :", [str(a) for a in queue], "\n")
+
+            assumption = queue.pop(0)
+
+            other_assumptions = [a for a in assumption_set if a != assumption]
+            print("removing", assumption, ":", len(other_assumptions))
+            muc = self.get_any_minimal_uc_iterative_deletion_improved(different_assumptions=other_assumptions)
+            print("FOUND :", [str(a) for a in muc])
+
+            if muc not in minimal_cores and muc:
+                minimal_cores.append(muc)
+
+            if len(muc) == 1:
+                # if a found core is atomic : remove him from the assumption set
+                assumption_set = [a for a in assumption_set if a != muc[0]]
+                print("REMOVED ", muc[0], "FROM ASSUMPTION SET (Atomic)")
+                # also rest the checked assumptions for new assumption set
+                checked_assumptions = []
+                print("RESET CHECKED ASSUMPTIONS")
+
+            # solutions are also added after they have been deleted from the assumption set to initiate a rerun
+            for a in muc:
+                if a not in checked_assumptions:
+                    queue.append(a)
+                    checked_assumptions.append(a)
+                else:
+                    print("ALREADY IN :", a)
+
+        return minimal_cores
 
     def __str__(self):
         out = repr(self) + "\n"
