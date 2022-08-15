@@ -2,6 +2,20 @@
 
 ***
 
+`16.08.2022` : Dienstag
+
++ Ideas :
+	+ Sadly my idea for stopping after the first found solvable instance doesn't work 😔
+	+ At least not in this algorithm state :
+		+ I think when we find a minimal core, we can exclude more subsets!!
+		+ When iterative deletion really always works (which I think it does) we can assume that each found result is a minimal core
+		+ This also means, that additionally to excluding all the subsets that contain the whole core, we can exclude all subsets that itself are full subsets of the minimal core
+		+ This is because if they would be an unsat core, our just found minimal unsat core wouldn't be minimal anymore
+		+ But because it is, these other subsets cannot be minimal cores!!
+	+ I think with this addition to my algorithm the stopping after the first satisfiable instance should be possible again 🤔
+
+***
+
 `14.08.2022 + 15.08.2022` : Sonntag + Montag
 
 + Ideas :
