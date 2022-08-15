@@ -2,7 +2,52 @@
 
 ***
 
-`10.08.2022` : Samstag
+`14.08.2022 + 15.08.2022` : Sonntag + Montag
+
++ Ideas :
+	+ Tackling Task 2 and 3 :
+		1. Look at Task 2 and then task 3, bc. task 2 is more general
+		+ Thinking about the structure of cores :
+			+ How many minimal core can an unsat core maximally contain?
+				+ If there are many small cores : *its harder for bigger cores to exist and not contain the smaller cores*
+				+ If many big cores exist : *you can't have too many small cores without making some of the big cores not minimal*
+				+ Since finding subsets of size $x,\ 0 \le x \le n,\ n=|core|$ of the core follows a Binomial distribution, our core candidates look like this :
+				+ ![](res/maximal_core_size_1.jpg)
+				+ As you can see either choosing a big core or small core already eliminates many other possible subsets from being a core
+				+ ![](maximal_core_size_2.jpg)
+				+ ![](maximal_core_size_3.jpg)
+				+ What's also observable is, that choosing a subset from one level doesn't eliminate any subsets on that same level
+				+ So we can use this fact to find the level with the most subsets and just choose all those subsets as cores and should have the biggest possible amount of minimal cores like this.
+				+ The biggest level in a binomial distribution is always $l = \lfloor\dfrac{n}{s}\rfloor$
+					+ since $l$ has to be an integer we can just take the floor of $\dfrac{n}{s}$ because if $n$ is odd both levels $l= \lfloor\dfrac{n}{s}\rfloor$ and $l = \lfloor\dfrac{n}{s}\rfloor + 1$ have always the same number of subsets
+				+ ![](maximal_core_size_4.jpg)
+				+ ![](maximal_core_size_5.jpg)
+				+ This also makes the worst case number of minimal cores $|cores| = \dbinom{n}{\lfloor\dfrac{n}{s}\rfloor}$
+				+ This means that any algorithm to find all those cores would have to take at least $\dbinom{n}{\lfloor\dfrac{n}{s}\rfloor}$ steps, which would indicate a runtime class that is sadly non-polynomial
+				+ This makes the whole problem of finding all minimal/minimum cores inherently non-polynomial in the worst case!
+				+ But since in most cases those cores shouldn't be so dense and many I think there's still reason to look for an efficient way to solve them
+		+ Algorithm Idea:
+			+ Taking the basic idea of the Brute Force approach
+			+ Starting Bottom-Up and use the iterative deletion algorithm for Task 5 to get any minimal unsatisfiable core
+			+ Then use the found minimal core, to exclude all branches of the search tree, that include this core
+			+ This should in theory still take the same amount of solver calls as the brute force algorithm
+			+ But maybe since we check each subset for any minimal unsat core we can also exclude subsets from satisfiable instances and increase its speed this way? 🤔
+			+ Illustration how this algorithm would work
+			+ ![](res/brute_force_it_del_sat_removal_right_order.gif)
+		+ Down below illustrated is the algorithm execution on a dense core distribution problem which has the maximum number of minimal cores :
+		+ ![](res/dense_core.jpg)
+		+ Another very useful side effect seems to be that up until one point all solver call seem to be unsatisfiable and after the first call is satisfiable no other unsat subset is found!
+		+ I think this is because, when we are going bottom up, starting with the biggest set, and trimming the tree on the way to exclude finding the same core twice, we probably necessarily have to find a new core with each new solver call until none are left 🤔 (JUST MY HYPOTHESIS : MUST BE TESTED!!!!)
+		+ If this truly is the case we can improve the runtime even more! By just simply stopping the algorithm after the first instance gets satisfiable.
+		+ This would improve the runtime drastically and would make the runtime $O(|core| * n)$ (number of minimal cores times linear runtime for the iterative deletion algorithm)
+		+ This is still sadly non-polynomial in the worst case of dense minimal core distribution
+		+ But I guess for regular problems this could be a nice improvement on the brute force variant of finding all minimal cores
++ TODO :
+	+ Still find a way to dynamically iterate over subsets
+
+***
+
+`13.08.2022` : Samstag
 
 + Progress :
 	+ Implemented orkunt's idea for improving the performance of the iterative deletion algorithm for Task 5
