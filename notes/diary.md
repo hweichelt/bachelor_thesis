@@ -14,14 +14,14 @@
 				+ Since finding subsets of size $x,\ 0 \le x \le n,\ n=|core|$ of the core follows a Binomial distribution, our core candidates look like this :
 				+ ![](res/maximal_core_size_1.jpg)
 				+ As you can see either choosing a big core or small core already eliminates many other possible subsets from being a core
-				+ ![](maximal_core_size_2.jpg)
-				+ ![](maximal_core_size_3.jpg)
+				+ ![](res/maximal_core_size_2.jpg)
+				+ ![](res/maximal_core_size_3.jpg)
 				+ What's also observable is, that choosing a subset from one level doesn't eliminate any subsets on that same level
 				+ So we can use this fact to find the level with the most subsets and just choose all those subsets as cores and should have the biggest possible amount of minimal cores like this.
 				+ The biggest level in a binomial distribution is always $l = \lfloor\dfrac{n}{s}\rfloor$
 					+ since $l$ has to be an integer we can just take the floor of $\dfrac{n}{s}$ because if $n$ is odd both levels $l= \lfloor\dfrac{n}{s}\rfloor$ and $l = \lfloor\dfrac{n}{s}\rfloor + 1$ have always the same number of subsets
-				+ ![](maximal_core_size_4.jpg)
-				+ ![](maximal_core_size_5.jpg)
+				+ ![](res/maximal_core_size_4.jpg)
+				+ ![](res/maximal_core_size_5.jpg)
 				+ This also makes the worst case number of minimal cores $|cores| = \dbinom{n}{\lfloor\dfrac{n}{s}\rfloor}$
 				+ This means that any algorithm to find all those cores would have to take at least $\dbinom{n}{\lfloor\dfrac{n}{s}\rfloor}$ steps, which would indicate a runtime class that is sadly non-polynomial
 				+ This makes the whole problem of finding all minimal/minimum cores inherently non-polynomial in the worst case!
