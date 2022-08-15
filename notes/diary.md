@@ -6,6 +6,9 @@
 
 + Ideas :
 	+ Sadly my idea for stopping after the first found solvable instance doesn't work 😔
+	+ COUNTER EXAMPLE : 
+		+ $\lbrace a,b,c,d\rbrace$
+		+ Minimal Cores : $\lbrace d,c,b \rbrace, \lbrace a,b \rbrace, \lbrace a,c \rbrace, \lbrace a,d\rbrace$
 	+ At least not in this algorithm state :
 		+ I think when we find a minimal core, we can exclude more subsets!!
 		+ When iterative deletion really always works (which I think it does) we can assume that each found result is a minimal core
