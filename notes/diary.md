@@ -1,6 +1,83 @@
 # Working-Diary
 
 ***
+`01.09.2022` : Donnerstag
++ Ideas :
+	+ New Idea : Use ASP to find the next biggest unskippable subset
+		+ Use an ASP Program here as some kind of oracle, which gives us the next biggest unskippable subset
+		+ Start of with all assumptions and no oracle call
+		+ Then after the first MUC is found, add this MUC to the program and exclude all subsets via constraints 
+		+ This should also minimize the grounded tree more and more with each step
+		+ When there is no set left (UNSAT) : All Subsets have been checked or skipped
+		+ Is this a good idea? 🤔
+
+***
+`29.08.2022` : Montag
++ The stopping approach doesn't work 😞
+	+ While trying to prove it, I encountered a counter example
+	+ These types of example occur, when there is an unsat core in the layer under the fully skippable/satisfiable layer. For this unsat core, all supersets in the skippable/sat layer have to be skipped, because they contain another unsat core, which necessarily has to contain the assumption that isn't in the MUC subset
+	+ When all of these are skipped, it is possible for the MUC not to be found beforehand, and thus be never found! (NOT ACCEPTABLE)
+	+ Counter-Example :
+		+ ![](res/counter_example_stopping.jpg)
+
+***
+`24.08.2022` : Mittwoch
++ Ideas : 
+	+ Idea with stopping after the first fully skippable/satisfiable layer should work
+	+ Every instance that is **skipped** *contains* an already found minimal core or would if minimal *invalidate* an already found minimal core
+		+ This also leaves the possibility for the skipped subset to contain additionally to the known minimal core another undiscovered minimal core
+		+ But since each lower layer contains all permutations of subsets that are missing one assumption, the other core should be found in the next layer if not earlier
+	+ Every subset that is **satisfiable** makes all smaller subsets that are also subsets of the the sat set invalid as minimal core candidates
+		+ This should cover all potential subsets that aren't already skippable
+	+ IDEA : Make the skips more efficient
+		+ Approach 1 :
+			+ After a MUC is found : Compute all instances that this found MUC allows to be skipped and enter them in a Hash-Map
+			+ This is not the best idea, since the amount of subsets that can be skipped increases not with core-size, but with the size of the original assumption-set
+			+ For example : see how many subsets can be skipped when $\lbrace a\rbrace$ is found to be a MUC :
+
+| $\|A\|$| 2|3|4|5|
+|:-:|:-:|:-:|:-:|:-:|
+|skipped| 2|4|8|16|
+
+
+***
+`22.08.2022` : Montag
++ Ideas : 
+	+ My algorithm idea, doesn't work! Stopping after having cleared the level where the first satisfiable subset is found isn't sufficient to guarantee having found all subsets!
+	+ Counter Example :
+		+ ![](res/counter_example.jpg)
+	+ Modification : Maybe it should suffice stopping after the first fully skippable / satisfiable layer
+	+ since we know that all subsets would either result in an already found minimal core or are satisfiable, and since we covered a full layer, should cover the whole search-space ? 🤔
+	+ IDEA : To make the Skipping process faster : Use a hash-table (dict) to store information on skippable subsets after a core / valid subset is found rather than checking for each subset the whole core and sat list individually
+
+***
+
+`18.08.2022` : Donnerstag
++ Progress :
+	+ Implemented the algorithm idea, that is stopping after having reached the first satisfiable subset
+	+ With a slight modification, that it has to solve the whole layer where the satisfiable instance was found to finish
+
+***
+
+`17.08.2022` : Mittwoch
++ Ideas :
+	+ The idea (from yesterday) should work
+	+ It is effectively just excluding both (bigger and smaller) subsets from the searchtree in contrast to just excluding bigger subsets (before)
+	+ These (smaller) exclusions were made in the previous algorithm when we found a satisfiable subset, but they can also be made for minimal unsat cores
+	+ Another nice side effect is, that we can save some solver calls because more reductions are possible from each found core
+	+ Here are some examples :
+		+ The Counter example that broke the first version :
+		+ ![](res/breaking_example.jpg)
+		+ on the left : previous version
+		+ on the right : new version that excludes smaller and bigger subsets
+		+ I also applied this version on my bigger example again and it still works like a charm 
+		+ ![](res/new_improved_algorithm.jpg)
++ TODO :
+	+ Though it's nice that the algorithm is working, there's still a big caveat!
+	+ This is that for big instances (original core size $\sim 100$) the search tree is so gigantic that checking all the subsets still takes an eternity
+	+ I will have to look into what's the most efficient way to check for the skip condition so that this becomes as fast as possible
+
+***
 
 `16.08.2022` : Dienstag
 
@@ -39,8 +116,8 @@
 					+ since $l$ has to be an integer we can just take the floor of $\dfrac{n}{s}$ because if $n$ is odd both levels $l= \lfloor\dfrac{n}{s}\rfloor$ and $l = \lfloor\dfrac{n}{s}\rfloor + 1$ have always the same number of subsets
 				+ ![](res/maximal_core_size_4.jpg)
 				+ ![](res/maximal_core_size_5.jpg)
-				+ This also makes the worst case number of minimal cores $|cores| = \dbinom{n}{\lfloor\dfrac{n}{s}\rfloor}$
-				+ This means that any algorithm to find all those cores would have to take at least $\dbinom{n}{\lfloor\dfrac{n}{s}\rfloor}$ steps, which would indicate a runtime class that is sadly non-polynomial
+				+ This also makes the worst case number of minimal cores $|cores| = \dbinom{n}{\lfloor\dfrac{n}{2}\rfloor}$
+				+ This means that any algorithm to find all those cores would have to take at least $\dbinom{n}{\lfloor\dfrac{n}{2}\rfloor}$ steps, which would indicate a runtime class that is sadly non-polynomial
 				+ This makes the whole problem of finding all minimal/minimum cores inherently non-polynomial in the worst case!
 				+ But since in most cases those cores shouldn't be so dense and many I think there's still reason to look for an efficient way to solve them
 		+ Algorithm Idea:
