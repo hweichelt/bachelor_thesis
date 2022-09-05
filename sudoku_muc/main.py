@@ -1,14 +1,16 @@
-import clingo
-import time
+import json
+import os.path
+from itertools import combinations, chain
+
 import signal
-from minimal_unsatisfiable_core import Util, Container
+from minimal_unsatisfiable_core import Util, Container, Test, TestAllContained, TestAnyContained
 
 TIMEOUT = 10
 
 
 def muc_sudoku():
     single_example = [
-        "res/examples/sudoku/sudoku_multi_combined"
+        "res/examples/abstract_multi_core_big"
     ]
     abstract_examples = [
         "res/examples/abstract_multi_sat",
@@ -30,50 +32,13 @@ def muc_sudoku():
         muc_sudoku_on_example(example)
 
 
-def timeout_handler(signum, frame):
-    raise Exception("OUT OF TIME")
-
-
-def measure_function(function, args=None, kwargs=None, timeout=10, verbose=0):
-    if args is None:
-        args = []
-    if kwargs is None:
-        kwargs = {}
-    if timeout <= 0:
-        raise ValueError("timeout has to be a positive number greater than 0")
-
-    # start countdown for timeout
-    signal.alarm(timeout)
-    try:
-        t_start = time.time()
-        result = function(*args, **kwargs)
-        t_end = time.time()
-        # end countdown for timeout if function was able to complete in time
-        signal.alarm(0)
-        return t_end - t_start, result
-    except Exception as e:
-        if verbose > 0:
-            print(e)
-        return -1, None
-
-
-def check_result_all(test_result, valid_result):
-    if test_result is None:
-        return valid_result is None
-
-    test_result_strings = [{str(a) for a in c} for c in test_result]
-
-    return all([set(muc) in test_result_strings for muc in valid_result])
-
-
-def check_result_any(test_result, valid_result):
-    if test_result is None:
-        return valid_result is None
-    if not valid_result:
-        return not bool(test_result)
-
-    valid_result_sets = [set(muc) for muc in valid_result]
-    return set([str(a) for a in test_result]) in valid_result_sets
+def print_test_results(function, valid_data, test: Test, name=None):
+    if name is None:
+        name = function.__name__
+    runtime, result = Util.measure_function(function, timeout=TIMEOUT)
+    print(f"[time={'{:.5f}'.format(runtime)}s]", name,
+          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    print("-" * 14 + ">", ("INVALID", "VALID")[test.check(result, valid_data)])
 
 
 def muc_sudoku_on_example(example_directory):
@@ -86,7 +51,7 @@ def muc_sudoku_on_example(example_directory):
     )
 
     print([container_1])
-    print(container_1)
+    # print(container_1)
 
     satisfiable, model, core = container_1.solve()
     print("result : ", ["UNSAT", "SAT"][satisfiable])
@@ -95,9 +60,19 @@ def muc_sudoku_on_example(example_directory):
 
     results = Util.read_dictionary_from_file(f"{example_directory}/results.txt")
 
+    # -----------
+
+    print(container_1.assumptions[:4])
+    muc = container_1.get_any_minimal_uc_iterative_deletion_improved(different_assumptions=[a for a in container_1.assumptions if str(a) != "c"])
+    print([str(a) for a in muc])
+
+    # -----------
+
     print("\n=====> BENCHMARK ALGORITHM PERFORMANCE <=====")
 
-    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.signal(signal.SIGALRM, Util.timeout_handler)
+
+    # not_vs_without()
 
     # print("\n===> TASK T1 )")
     #
@@ -116,11 +91,45 @@ def muc_sudoku_on_example(example_directory):
     # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Improved Brute Force): ",
     #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
     # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
+    #
+    # runtime, result = measure_function(container_1.get_all_minimal_uc_iterative_deletion, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Iterative Deletion): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
+    #
+    # runtime, result = measure_function(container_1.get_all_minimal_uc_iterative_deletion_approach_2, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Iterative Deletion 2): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
+    #
+    # runtime, result = measure_function(container_1.get_all_minimal_uc_iterative_deletion_approach_3, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Iterative Deletion 3): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
 
-    runtime, result = measure_function(container_1.get_all_minimal_uc_iterative_deletion, timeout=TIMEOUT)
-    print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Iterative Deletion): ",
-          [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
-    print("-" * 14 + ">", ("INVALID", "VALID")[check_result_all(result, results.get("minimal"))])
+    # runtime, result = Util.measure_function(container_1.get_all_minimal_uc_iterative_deletion_approach_4, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Iterative Deletion 4): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[Util.check_result_all(result, results.get("minimal"))])
+
+    print_test_results(
+        function=container_1.get_all_minimal_uc_iterative_deletion,
+        valid_data=results.get("minimal"),
+        test=TestAllContained(),
+        name="ALL MINIMAL UCS (Iterative Deletion 3):"
+    )
+
+    print_test_results(
+        function=container_1.get_all_minimal_uc_iterative_deletion_stopping,
+        valid_data=results.get("minimal"),
+        test=TestAllContained(),
+        name="ALL MINIMAL UCS (Iterative Deletion 4):"
+    )
+
+    # runtime, result = Util.measure_function(container_1.get_all_minimal_uc_iterative_deletion_approach_5, timeout=TIMEOUT)
+    # print(f"[time={'{:.5f}'.format(runtime)}s]", "ALL MINIMAL UCS (Iterative Deletion 5): ",
+    #       [[str(a) for a in muc] for muc in result] if runtime != -1 else "TIMEOUT")
+    # print("-" * 14 + ">", ("INVALID", "VALID")[Util.check_result_all(result, results.get("minimal"))])
 
     # print("\n===> TASK T3 )")
     #
@@ -176,7 +185,5 @@ def muc_sudoku_on_example(example_directory):
 
 if __name__ == '__main__':
 
-    # example_clingraph()
     muc_sudoku()
-    # clingraph_factbase_computation()
 

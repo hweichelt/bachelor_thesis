@@ -1,6 +1,8 @@
 import os
 import random
 import json
+import time
+import signal
 from abc import ABC, abstractmethod
 from itertools import chain, combinations
 
@@ -103,6 +105,88 @@ class Util(ABC):
         initial_symbols = [s.symbol for s in container.control.symbolic_atoms.by_signature(INITIAL_SIGNATURE, 3)]
         symbol_list = assumption_symbols + core_symbols + initial_symbols
         Util.render_sudoku(symbol_list, visualization_file, name_format=name_format)
+
+    @staticmethod
+    def timeout_handler(signum, frame):
+        raise Exception("OUT OF TIME")
+
+    @staticmethod
+    def measure_function(function, args=None, kwargs=None, timeout=10, verbose=0):
+        if args is None:
+            args = []
+        if kwargs is None:
+            kwargs = {}
+        if timeout <= 0:
+            raise ValueError("timeout has to be a positive number greater than 0")
+
+        # start countdown for timeout
+        signal.alarm(timeout)
+        try:
+            t_start = time.perf_counter()
+            result = function(*args, **kwargs)
+            t_end = time.perf_counter()
+            # end countdown for timeout if function was able to complete in time
+            signal.alarm(0)
+            return t_end - t_start, result
+        except Exception as e:
+            if verbose > 0:
+                print(e)
+            return -1, None
+
+    @staticmethod
+    def generate_dense_example(size=5, path="res/examples/temp/", name="abstract_multi_core_dense"):
+        if not os.path.isdir(path):
+            os.mkdir(path)
+        if not os.path.isdir(f"{path}{name}"):
+            os.mkdir(f"{path}{name}")
+
+        print("START GENERATING")
+
+        encoding_str = " ".join([f"{{a({i})}}." for i in range(size)]) + "\n"
+        assumptions_str = " ".join([f"assume(a({i}))." for i in range(size)])
+        results = {"minimal": [], "minimum": []}
+        for subset in chain.from_iterable([combinations(range(size), size // 2)]):
+            encoding_str += ":- " + ", ".join([f"a({s})" for s in subset]) + ".\n"
+            results["minimal"].append([f"a({s})" for s in subset])
+
+        with open(f"{path}{name}/encoding.lp", "w") as file:
+            file.write(encoding_str)
+        with open(f"{path}{name}/assumptions.lp", "w") as file:
+            file.write(assumptions_str)
+        with open(f"{path}{name}/results.txt", 'w') as file:
+            file.write(json.dumps(results))
+
+        print("FINISHED GENERATING")
+
+
+class Test(ABC):
+    @staticmethod
+    @abstractmethod
+    def check(test_data, valid_data) -> bool:
+        pass
+
+
+class TestAllContained(Test):
+    @staticmethod
+    def check(test_data, valid_data) -> bool:
+        if test_data is None:
+            return valid_data is None
+
+        test_result_strings = [{str(a) for a in c} for c in test_data]
+
+        return all([set(muc) in test_result_strings for muc in valid_data])
+
+
+class TestAnyContained(Test):
+    @staticmethod
+    def check(test_data, valid_data) -> bool:
+        if test_data is None:
+            return valid_data is None
+        if not valid_data:
+            return not bool(test_data)
+
+        valid_result_sets = [set(muc) for muc in valid_data]
+        return set([str(a) for a in test_data]) in valid_result_sets
 
 
 class Container:
@@ -365,63 +449,120 @@ class Container:
 
         return probe_set
 
-    def get_all_minimal_uc_iterative_deletion(self, different_assumptions=None):
+    def get_all_minimal_uc_iterative_deletion(self, verbose=0):
+        # This algorithm uses the iterative deletion algorithm for finding minimal unsatisfiable core to find all the
+        # minimal unsatisfiable core inside a bigger unsatisfiable core. Right now the algorithm isn't performing very
+        # good for big instance because the traversing of the search space just takes too long (even if most of it is
+        # skipped).
+        # It works like this :
+        # We are checking all subsets of all possible sizes for the initial assumptions set, starting with the biggest
+        # one descending. For each subset the iterative deletion algorithm is called an a minimal unsatisfiable core is
+        # found. After such a core is found we store it and can from now on skipp all subsets which either are contained
+        # inside the minimal core or contain the minimal core itself. The same happens when a satisfiable subset is
+        # found. It is recorded but unlike for the MUC, only subsets of the satisfiable set can be skipped, not
+        # supersets.
+
         satisfiable, _, core = self.solve(different_assumptions=[])
         if not satisfiable:
             # raise error if the encoding instance isn't satisfiable without assumptions
             raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
 
         # check if the encoding with all the assumptions is unsatisfiable
-        if different_assumptions is None:
-            satisfiable, _, core = self.solve()
-        else:
-            satisfiable, _, core = self.solve(different_assumptions=different_assumptions)
-
+        satisfiable, _, core = self.solve()
         if satisfiable:
             # return empty list if the encoding is already satisfiable with the assumptions
             return []
 
         # use container assumptions by default or different_assumptions
-        assumption_set = different_assumptions if different_assumptions is not None else list(self.assumptions)
+        assumption_set = list(self.assumptions)
 
-        start_muc = self.get_any_minimal_uc_iterative_deletion_improved()
+        powerset = chain.from_iterable(combinations(assumption_set, r) for r in reversed(range(len(assumption_set) + 1)))
+        minimal_cores = []
+        satisfiable_subsets = []
 
-        minimal_cores = [start_muc]
-        checked_assumptions = []
-        queue = [a for a in start_muc]
+        for subset in powerset:
+            if any([core.issubset(subset) for core in minimal_cores]):
+                if verbose > 0:
+                    print("SKIPPED [UNSAT]:", [str(a) for a in subset])
+                continue
+            if any([set(subset).issubset(s) for s in satisfiable_subsets]):
+                if verbose > 0:
+                    print("SKIPPED [SAT]:", [str(a) for a in subset])
+                continue
 
-        # TODO : Transform queue to assumption queue and not core queue :
-        #  This also gets rid of the annoying nested loop
+            if verbose > 0:
+                print([str(a) for a in subset])
+            any_muc = self.get_any_minimal_uc_iterative_deletion_improved(different_assumptions=list(subset))
+            if not any_muc:
+                satisfiable_subsets.append(subset)
+                continue
+            if any_muc not in minimal_cores:
+                if verbose >= 0:
+                    print("FOUND MUC :", [str(a) for a in any_muc])
+                minimal_cores.append(set(any_muc))
 
-        while queue:
-            print("\nminimal_cores :", [[str(a) for a in c] for c in minimal_cores])
-            print("queue :", [str(a) for a in queue], "\n")
+        return minimal_cores
 
-            assumption = queue.pop(0)
+    def get_all_minimal_uc_iterative_deletion_stopping(self, verbose=0):
+        # STOPPING AFTER FIRST LAYER WITH ONLY SKIPPABLE OR SAT SUBSETS IS CLEARED
 
-            other_assumptions = [a for a in assumption_set if a != assumption]
-            print("removing", assumption, ":", len(other_assumptions))
-            muc = self.get_any_minimal_uc_iterative_deletion_improved(different_assumptions=other_assumptions)
-            print("FOUND :", [str(a) for a in muc])
+        satisfiable, _, _ = self.solve(different_assumptions=[])
+        if not satisfiable:
+            # raise error if the encoding instance isn't satisfiable without assumptions
+            raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
 
-            if muc not in minimal_cores and muc:
-                minimal_cores.append(muc)
+        # check if the encoding with all the assumptions is unsatisfiable
+        satisfiable, _, core = self.solve()
+        if satisfiable:
+            # return empty list if the encoding is already satisfiable with the assumptions
+            return []
 
-            if len(muc) == 1:
-                # if a found core is atomic : remove him from the assumption set
-                assumption_set = [a for a in assumption_set if a != muc[0]]
-                print("REMOVED ", muc[0], "FROM ASSUMPTION SET (Atomic)")
-                # also rest the checked assumptions for new assumption set
-                checked_assumptions = []
-                print("RESET CHECKED ASSUMPTIONS")
+        assumption_set = list(self.assumptions)
 
-            # solutions are also added after they have been deleted from the assumption set to initiate a rerun
-            for a in muc:
-                if a not in checked_assumptions:
-                    queue.append(a)
-                    checked_assumptions.append(a)
+        powerset = chain.from_iterable(combinations(assumption_set, r) for r in reversed(range(len(assumption_set) + 1)))
+        minimal_cores = []
+        satisfiable_subsets = []
+        level = len(assumption_set)
+        unsat_on_level = False
+
+        for current_subset in powerset:
+            subset = set(current_subset)
+            if len(subset) < level:
+                # BREAK : if the subsets become smaller than the current level and the current level had no unsat
+                # subsets in it
+                if not unsat_on_level:
+                    break
+                # RESET : level and found unsat subsets for each level
                 else:
-                    print("ALREADY IN :", a)
+                    level = len(subset)
+                    unsat_on_level = False
+
+            # SKIP if muc in subset : exclude bigger subsets
+            if any([core.issubset(subset) for core in minimal_cores]):
+                if verbose > 0:
+                    print("SKIPPED :", [str(a) for a in subset])
+                continue
+            # SKIP if subset in muc : exclude smaller subsets
+            if any([subset.issubset(core) for core in minimal_cores]):
+                if verbose > 0:
+                    print("SKIPPED :", [str(a) for a in subset])
+                continue
+            # SKIP SAT : exclude smaller subsets of satisfiable subsets
+            if any([subset.issubset(sat) for sat in satisfiable_subsets]):
+                if verbose > 0:
+                    print("SKIPPED :", [str(a) for a in subset])
+                continue
+
+            any_muc = self.get_any_minimal_uc_iterative_deletion_improved(different_assumptions=list(subset))
+            if any_muc:
+                unsat_on_level = True
+                minimal_cores.append(set(any_muc))
+                if verbose > 0:
+                    print("FOUND MUC :", [str(a) for a in any_muc])
+            else:
+                satisfiable_subsets.append(subset)
+                if verbose > 0:
+                    print("FOUND SAT :", [str(a) for a in subset], "size :", len(subset))
 
         return minimal_cores
 
