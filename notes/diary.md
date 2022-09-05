@@ -10,6 +10,14 @@
 		+ This should also minimize the grounded tree more and more with each step
 		+ When there is no set left (UNSAT) : All Subsets have been checked or skipped
 		+ Is this a good idea? 🤔
++ TODO :
+	+ Cleanup-Code in `main.py` and `minimal_unsatisfiable_core.py`
+		+ Move all the temporary main functions into Util 
+		+ Cleanup the Task 2 Algorithms so that only the following are left :
+			+ It Del Task 2 : without stopping : naive
+			+ It Del Task 2 : with stopping (EVEN THOUGH IT'S NOT ALWAYS CORRECT)
+			+ It Del Task 2 : with ASP oracle (ToBeImplemented)
+			+ It Del Task 2 : without stopping : more efficient (ToBeImplemented)
 
 ***
 `29.08.2022` : Montag
