@@ -1,6 +1,45 @@
 # Working-Diary
 
 ***
+`26.09.2022` : Montag
+
++ While trying to implement an efficient skipping method I discovered that the fastest way is using sets and do subset checking
+	+ To make the approximate algorithms for Task 3 and 4 more efficient I was looking for efficient ways of skipping all the skippable subsets of the search space
+	+ I envisioned a method where bitmasks, that represent the assumption members for a current subset, are used to efficiently check against already found minimal cores
+	+ This approach works and I implemented it with python bitarrays and numpy arrays
+	+ BUT against my intuition when I again checked it against a valid implementation of the same process using python sets and the `issubset` / `issuperset` methods to skip subsets, it turned out to be WAY FASTER!
+	+ I probably didn't notice it before because in my initial implementation my subsets weren't represented in the right way
+	+ I guess this is because `issubset` already is a very performant standard function for this type of task that works on hashable objects.
+	+ My guess is, that the set is represented through an internally generated hash table which is also used to check the `issubset` or `issuperset` condition in the most effective way
+	+ The python documentation isn't very helpful in this way, but as is commonly known are python internals most of the time the fastest and easiest way to do things in python.
+
+***
+`13.09.2022` : Dienstag
+
++ Progress :
+	+ Cleanup
+	+ Trying to prove stopping condition for 2 consecutive SAT/SKIP Layers
+	+ Trying Efficient Ways of skipping
+		+ Using bitmasks to represent subsets
+			+ Any other more efficient ideas?
++ What to Do?
+	+ Only Implement approximated version for Task 2
+		+ Stopping after time is exceeded
+		+ Stopping after $n$ cores are found
+		+ both
+		+ etc.
+		+ Using the efficient Skipping method
+	+ Modify the Task 2 Algorithm to find a guaranteed minimum core
+		+ allows for much more skipping if a small core is found
+		+ still could take pretty long to terminate
+		+ That's why also use an approximated version with stopping constraint (time)
+	+ Any other important Tasks left?
+	+ Else I would focus on :
+		1. Creating Benchmarks
+		2. Writing the Application Class
+		3. Continuing work on my thesis paper
+
+***
 `01.09.2022` : Donnerstag
 + Ideas :
 	+ New Idea : Use ASP to find the next biggest unskippable subset
