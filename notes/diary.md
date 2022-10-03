@@ -1,6 +1,77 @@
 # Working-Diary
 
 ***
+`28.09.2022` : Mittwoch
+
++ TODOs:
+	+ Look into the problem with non-monotonic reasoning and thus skipping subsets of satisfiable instances
+	+ Continue the writing part of the Thesis
+		+ Also include bitmask stuff and write why python outperforms it but still illustrate the idea!
+	+ Finish API as far as I can now
+		+ For the time beeing assume that the assumptions are just given in a file / with a special signature
+		+ Later some facts should be able to be turned into choice rules using the program_builder / program_transformer and assumptions created this way
+
++ Non Monotonic Reasoning:
+
+Hey I thought a bit about what you two said about the problem with non-monotonic reasoning today. I'm not entirely sure if I have it correct but as I understand it, the problem is that even if an assumption set is satisfiable, it doesn't mean that its subsets also are.
+
+I wrote down a small example :
+```
+{a}. {b}. {c}. {d}.
+
+:- a, b, c, d.
+:- a, b, not c.
+```
+
+This would mean that `{a,b,c,d}` is still `UNSAT` so my algorithm would start. Then `{a,b,c}` is satisfiable because there is no rule contradicting it. But when we only look at `{a,b}` it again gets `UNSAT` because of the last integrity constraint.
+
+I think in that case where the problem could lie is that I interpret the minimal core here not as `{a, b}` but rather `{a,b,-c}`.
+
+Because we are looking for minimal cores of the original assumption set, which was `{(a, True),(b, True), (c,True), (d,True)}`, `{(a, True), (b, True), (c, False)}` is not contained as a subset an thus shouldn't qualify as a minimal core of this assumption set in my opinion.
+
+I guess this is a question of how exactly you define the minimal core for our approach using assumptions rather than clauses in the SAT-Community.
+
+I think that, when looking for the minimal cores of `{(a, True), (b, True), (c, True)}` we shouldn't also consider their negated counterparts because that would be a different assumption set. We just want to know for our selected assumptions, which of them construct a minimal core.
+
+As it stands right now my implementation only removes assumptions from the assumption set but doesn't include their negations. The difference would look like this:
+
+```
+Example:
+
+My Approach :
+1. {a,b,c}
+2. {a,b}
+3. {a,c}
+4. {b,c}
+5. {a}
+6. ...
+
+Negation Approach :
+1. {a,b,c}
+2. {a,b,-c}
+3. {a,-b,c}
+4. {-a,b,c}
+5. {a,-b,-c}
+6. ...
+```
+
+Let's look at another example:
+```
+{a}. {b}. {c}.
+
+:- a, b, c.
+:- not a, not b, not c.
+```
+
+When using the negation approach for the assumption set `{a,b,c}` we would also get `{-a,-b,-c}` as a minimal core, even though it doesn't contain any of our original assumptions anymore. I don't know if those cores are of real interest when looking at `{a,b,c}`.
+
+These are only my thoughts about it, I'm unsure whether they are correct or useful. Maybe you can let me know if I got the idea right and if you think my reasoning makes sense.
+
+***
+
+
+
+***
 `26.09.2022` : Montag
 
 + While trying to implement an efficient skipping method I discovered that the fastest way is using sets and do subset checking
