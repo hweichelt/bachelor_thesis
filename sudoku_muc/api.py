@@ -1,34 +1,44 @@
 import signal
+import time
+
 import clingo
 
 from typing import Callable
+from itertools import chain, combinations
+from warnings import warn
 
 """
     from xclingo.ucore import CoreComputer
     assumptions,file = file_to_assumptions("instance.lp")
     initial/3 -> assume
     _assume(X):-X.
-    c = CoreCompuer(["encoding"],ctl,my_assumptions)
+    c = CoreComputer(["encoding"],ctl,my_assumptions)
     c.compute_muc(all=True)
 """
 
 # TYPE-ALIASES
 UnsatisfiableCore = set[clingo.Symbol]
-UnsatisfiableCoreSet = set[UnsatisfiableCore]
+UnsatisfiableCoreCollection = list[UnsatisfiableCore]
 
-# TODO : I used clingo.Symbol which should include Function etc.?? Is this correct?
-# TODO : Is there a way in the clingo api to directly load a files content to the control?
-#           Because of the scripts location that will be different from the read in files, include dependencies will not
-#           be able to be resolved correctly. To avoid this a clingo functionality would be nice or I could also use my
-#           already implemented version, which recursively loads all included files (isn't super nice).
-# TODO : Check if CoreComputer assumptions only works with sets or also with lists that could contain copies
-# TODO : Is it good style to set the type hind of a parameter to for example int and then its default value to None?
+# TODO : Is it good style to set the type hint of a parameter to for example int and then its default value to None?
+# TODO : Nice to haves :
+#  + Assume all literals of a certain signature (list of signatures) [ ]
+#  + Just assume given assumptions an nothing else (already implemented) [X]
 
 
 class TimeoutException(Exception):
-    def __init__(self, message, errors):
+    def __init__(self, message):
         super(TimeoutException, self).__init__(message)
-        self.errors = errors
+
+
+class EncodingUnsatisfiableException(Exception):
+    def __init__(self, message):
+        super(EncodingUnsatisfiableException, self).__init__(message)
+
+
+class AssumptionsSatisfiableException(Exception):
+    def __init__(self, message):
+        super(AssumptionsSatisfiableException, self).__init__(message)
 
 
 class Util:
@@ -58,37 +68,50 @@ class Util:
                 signal.alarm(0)
             return result
         except TimeoutException:
+            print("TIMEOUT")
             # return None if a timeout occurred
             return None
 
 
 class CoreComputer:
 
-    def __init__(self, encoding_paths: list[str], assumptions: set[clingo.Symbol], custom_control: clingo.Control = None):
+    def __init__(self, encoding_paths: list[str], assumptions: set[(clingo.Symbol, bool)], custom_control: clingo.Control = None):
         # Set up the clingo Control object
         self.control = clingo.Control()
         if custom_control is not None:
             self.control = custom_control
 
         # Read in the encoding files and add them to the clingo Control object
-
-        self.control.add("base", [], _________________)  # TODO : What is the best way to include external files here?
+        for file in encoding_paths:
+            self.control.load(file)
 
         # Ground the clingo Control object
         self.control.ground([("base", [])])
 
         # Set up the assumption set
         self.assumptions = assumptions
-        self.assumptions_lookup = {self.control.symbolic_atoms[a].literal: a for a in self.assumptions}
+        self.assumptions_lookup = {self.control.symbolic_atoms[a[0]].literal: a[0] for a in self.assumptions}
 
-    def compute_minimal(self, multiple: bool = False, amount: int = None, timeout: int = None) -> UnsatisfiableCoreSet:
+    def compute_minimal(self, multiple: bool = False, max_amount: int = None, timeout: int = None) -> UnsatisfiableCoreCollection:
+        # check that the encoding is satisfiable by itself (without any assumptions) else raise error
+        satisfiable, _, core = self._solve(_different_assumptions=set())
+        if not satisfiable:
+            # raise error if the encoding instance isn't satisfiable without assumptions
+            raise EncodingUnsatisfiableException("The encoding isn't satisfiable on it's own")
+
+        # check that the encoding with all assumptions is unsatisfiable else return empty set of mucs
+        satisfiable, _, core = self._solve()
+        if satisfiable:
+            return []
+
         # select the correct function depending on if the user wants multiple mucs or just one
         function = (self._compute_any_minimal_core, self._compute_multiple_minimal_cores)[multiple]
         # select the correct args and kwargs depending on the selected function
         args = []
         kwargs = {}
         if multiple:
-            kwargs["amount"] = amount
+            kwargs["max_amount"] = max_amount
+            kwargs["result_backup"] = []
 
         result = Util.function_with_timeout(
             function=function,
@@ -98,25 +121,93 @@ class CoreComputer:
         )
 
         if result is None:
-            pass
-            # TODO : Here raise an Exception or return None just make it clear that None means that something didn't go
-            #  the right way
+            partial_result = kwargs["result_backup"]
+            warn("The timeout limit was reached and the search stopped. A partial result will be returned")
+            return partial_result
 
         if multiple:
             return result
         else:
             # if only one minimal unsatisfiable core is wanted return a set containing only this one core. This is done
             # to maintain a uniform output format
-            return {result}
+            return [result]
+
+    # This method is used to solve the clingo control object with either the default assumptions or
+    # `_different_assumptions` when defined.
+    def _solve(self, _different_assumptions: set[(clingo.Symbol, bool)] = None) -> (bool, list, list):
+        assumption_list = list(_different_assumptions) if _different_assumptions is not None else list(self.assumptions)
+        with self.control.solve(assumptions=assumption_list, yield_=True) as solve_handle:
+            satisfiable = solve_handle.get().satisfiable
+            if solve_handle.model() is not None:
+                # filter out all atoms from the model that are not in shown_atoms
+                model = solve_handle.model().symbols(atoms=True)
+            else:
+                model = []
+            core = [self.assumptions_lookup[index] for index in solve_handle.core()]
+        return satisfiable, model, core
 
     # This method uses the iterative deletion approach to find any minimal unsatisfiable core of an
     # assumption set. This is a 'private' method, which should be called using the `compute_minimal` method.
-    def _compute_any_minimal_core(self) -> UnsatisfiableCore:
-        pass
+    def _compute_any_minimal_core(self, _different_assumptions: set[(clingo.Symbol, bool)] = None) -> UnsatisfiableCore:
+        # IMPROVED ITERATIVE DELETION ALGORITHM
+        # check for `different_assumptions` if the encoding is unsatisfiable, else return None
+        if _different_assumptions is not None:
+            satisfiable, _, core = self._solve(_different_assumptions=_different_assumptions)
+            if satisfiable:
+                raise AssumptionsSatisfiableException("The encoding with `_different_assumptions` isn't unsatisfiable")
+
+        # use container assumptions by default or different_assumptions
+        assumption_set = _different_assumptions if _different_assumptions is not None else self.assumptions
+        working_set = set(assumption_set)
+        probe_set = set()
+
+        for i, assumption in enumerate(assumption_set):
+            working_set.remove(assumption)
+            sat, _, _ = self._solve(_different_assumptions=working_set.union(probe_set))
+            if sat:
+                # if the probe set united with the assumption set becomes sat : add last removed assumption to probe set
+                probe_set.add(assumption)
+
+                # end for-loop if the encoding becomes unsatisfiable with the new probe set
+                if not self._solve(_different_assumptions=probe_set)[0]:
+                    break
+
+        return probe_set
 
     # This method is used to find multiple minimal unsatisfiable cores inside an assumption set. It uses the iterative
     # deletion method to find minimal cores by looking at all the possible subsets of the assumption set. Subsets that
     # either contain an already found minimal core or are themselves contained inside a minimal core are skipped.
     # This is a 'private' method, which should be called using the `compute_minimal` method.
-    def _compute_multiple_minimal_cores(self, amount: int = None) -> UnsatisfiableCoreSet:
-        pass
+    def _compute_multiple_minimal_cores(self, max_amount: int = None, result_backup: list[set[clingo.Symbol]] = None) -> UnsatisfiableCoreCollection:
+        # ITERATIVE DELETION BASED MULTI MUC ALGORITHM
+        assumption_set = set(self.assumptions)
+        # preparing the search space of subsets of the assumption set bottom up
+        search_space = chain.from_iterable(combinations(assumption_set, r) for r in reversed(range(len(assumption_set) + 1)))
+        minimal_cores = []
+        satisfiable_subsets = []
+
+        for s in search_space:
+            subset = set(s)
+            # SKIP subsets and supersets of already found MUCs
+            if any([muc.issubset(subset) or muc.issuperset(subset) for muc in minimal_cores]):
+                continue
+            # SKIP subsets of already found satisfiable subsets
+            if any([sat.issuperset(subset) for sat in satisfiable_subsets]):
+                continue
+
+            try:
+                any_muc = self._compute_any_minimal_core(_different_assumptions=subset)
+                if any_muc not in minimal_cores:
+                    minimal_cores.append(any_muc)
+                    # also append newly found MUC to `result_backup` list to keep info in case of timeout
+                    if result_backup is not None:
+                        result_backup.append(any_muc)
+                    # BREAK if the wanted amount of minimal cores is reached
+                    if max_amount is not None and max_amount == len(minimal_cores):
+                        break
+            except AssumptionsSatisfiableException:
+                satisfiable_subsets.append(subset)
+                continue
+
+        time.sleep(10)
+        return minimal_cores
