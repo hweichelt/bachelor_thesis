@@ -1,7 +1,12 @@
 import json
 import os.path
+import time
 from itertools import combinations, chain
 
+import clingo
+
+import tests
+import api
 import signal
 from minimal_unsatisfiable_core import Util, Container, Test, TestAllContained, TestAnyContained
 
@@ -16,7 +21,10 @@ def muc_sudoku():
         "res/examples/abstract_multi_sat",
         "res/examples/abstract_multi_core_medium",
         "res/examples/abstract_multi_core_intersecting",
-        "res/examples/abstract_multi_core_big"
+        "res/examples/abstract_multi_core_big",
+        "res/examples/abstract_multi_core_many",
+        "res/examples/abstract_multi_core_breaking",
+        "res/examples/abstract_multi_core_breaking_2",
     ]
     sudoku_examples = [
         "res/examples/sudoku/sudoku_valid",
@@ -86,72 +94,82 @@ def muc_sudoku_on_example(example_directory):
 
     print("\n===> TASK T2 )")
 
-    print_test_results(
-        function=container_1.get_all_minimal_uc_brute_force,
-        valid_data=results.get("minimal"),
-        test=TestAllContained(),
-        name="ALL MINIMAL UCS (Brute Force):"
-    )
+    # print_test_results(
+    #     function=container_1.get_all_minimal_uc_brute_force,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMAL UCS (Brute Force):"
+    # )
+    #
+    # print_test_results(
+    #     function=container_1.get_all_minimal_uc_improved_brute_force,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMAL UCS (Improved Brute Force):"
+    # )
+    #
+    # print_test_results(
+    #     function=container_1.get_all_minimal_uc_iterative_deletion,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMAL UCS (Iterative Deletion):"
+    # )
+
+    # print_test_results(
+    #     function=container_1.get_all_minimal_uc_iterative_deletion,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMAL UCS (Iterative Deletion STOPPING):"
+    # )
 
     print_test_results(
-        function=container_1.get_all_minimal_uc_improved_brute_force,
+        function=container_1.get_all_minimal_uc_iterative_deletion_oracle,
         valid_data=results.get("minimal"),
         test=TestAllContained(),
-        name="ALL MINIMAL UCS (Improved Brute Force):"
+        name="ALL MINIMAL UCS (Iterative Deletion ORACLE):"
     )
 
-    print_test_results(
-        function=container_1.get_all_minimal_uc_iterative_deletion,
-        valid_data=results.get("minimal"),
-        test=TestAllContained(),
-        name="ALL MINIMAL UCS (Iterative Deletion):"
-    )
-
-    print_test_results(
-        function=container_1.get_all_minimal_uc_iterative_deletion_stopping,
-        valid_data=results.get("minimal"),
-        test=TestAllContained(),
-        name="ALL MINIMAL UCS (Iterative Deletion Stopping):"
-    )
+    # res = container_1.get_all_minimal_uc_iterative_deletion_oracle()
+    # print(res)
 
     print("\n===> TASK T3 )")
 
-    print_test_results(
-        function=container_1.get_all_minimum_uc_brute_force,
-        valid_data=results.get("minimum"),
-        test=TestAllContained(),
-        name="ALL MINIMUM UCS (Brute Force):"
-    )
-
-    print_test_results(
-        function=container_1.get_all_minimum_uc_improved_brute_force,
-        valid_data=results.get("minimum"),
-        test=TestAllContained(),
-        name="ALL MINIMUM UCS (Improved Brute Force):"
-    )
+    # print_test_results(
+    #     function=container_1.get_all_minimum_uc_brute_force,
+    #     valid_data=results.get("minimum"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMUM UCS (Brute Force):"
+    # )
+    #
+    # print_test_results(
+    #     function=container_1.get_all_minimum_uc_improved_brute_force,
+    #     valid_data=results.get("minimum"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMUM UCS (Improved Brute Force):"
+    # )
 
     print("\n===> TASK T5 )")
 
-    print_test_results(
-        function=container_1.get_any_minimum_uc_improved_brute_force,
-        valid_data=results.get("minimum"),
-        test=TestAnyContained(),
-        name="ANY MINIMUM UCS (Improved Brute Force):"
-    )
-
-    print_test_results(
-        function=container_1.get_any_minimal_uc_iterative_deletion,
-        valid_data=results.get("minimal"),
-        test=TestAnyContained(),
-        name="ANY MINIMAL UCS (Iterative Deletion):"
-    )
-
-    print_test_results(
-        function=container_1.get_any_minimal_uc_iterative_deletion_improved,
-        valid_data=results.get("minimal"),
-        test=TestAnyContained(),
-        name="ANY MINIMAL UCS (Iterative Deletion Improved):"
-    )
+    # print_test_results(
+    #     function=container_1.get_any_minimum_uc_improved_brute_force,
+    #     valid_data=results.get("minimum"),
+    #     test=TestAnyContained(),
+    #     name="ANY MINIMUM UCS (Improved Brute Force):"
+    # )
+    #
+    # print_test_results(
+    #     function=container_1.get_any_minimal_uc_iterative_deletion,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAnyContained(),
+    #     name="ANY MINIMAL UCS (Iterative Deletion):"
+    # )
+    #
+    # print_test_results(
+    #     function=container_1.get_any_minimal_uc_iterative_deletion_improved,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAnyContained(),
+    #     name="ANY MINIMAL UCS (Iterative Deletion Improved):"
+    # )
 
     return
 
@@ -180,5 +198,43 @@ def muc_sudoku_on_example(example_directory):
 
 if __name__ == '__main__':
 
-    muc_sudoku()
+    # tests.subset_finder()
+    # muc_sudoku()
+    # tests.check_comparison()
+    # time_start = time.perf_counter()
+    # tests.realistic_set_skipping(n_assumptions=20, minimal_cores=[["a(0)", "a(1)"], ["a(1)", "a(2)"], ["a(3)"]])
+    # time_end = time.perf_counter()
+    #
+    # print(f"time={time_end - time_start}s")
+    #
+    assumptions = {
+        "solution(4, 9, 3)",
+        "solution(7, 1, 9)",
+        "solution(2, 2, 7)",
+        "solution(4, 7, 7)",
+        "solution(3, 9, 7)",
+        "solution(8, 2, 8)",
+        "solution(1, 6, 8)",
+        "solution(6, 7, 8)",
+        "solution(2, 9, 8)",
+        "solution(5, 5, 7)",
+        "solution(1, 7, 6)",
+        "solution(9, 1, 7)",
+        "solution(2, 7, 4)",
+        "solution(9, 7, 4)",
+    }
+    assumptions = {(clingo.parse_term(string), True) for string in assumptions}
 
+    directory = "res/examples/sudoku/sudoku_multi_combined"
+    cc = api.CoreComputer(
+        encoding_paths=[f"{directory}/encoding.lp", f"{directory}/extras.lp"],
+        assumptions=assumptions
+    )
+    res = cc.compute_minimal(multiple=True, timeout=1, max_amount=None)
+    print(type(res))
+    if res is not None:
+        print([[str(a) for a, _ in core] for core in res])
+
+    # TODO : Why the double true for assumptions?
+    # tests.bit_array_test()
+    # tests.not_vs_without_2()
