@@ -1,9 +1,11 @@
 __pycache__
 sudoku_muc/out
 sudoku_muc/res/out
+sudoku_muc/res/test_instance.lp
 sudoku_muc/.idea
 sudoku_muc/tests.py
 notes/.obsidian
+notes/thesis.md
 playground
 Themenvergabe.pdf
 sudoku_muc/res/examples/temp
