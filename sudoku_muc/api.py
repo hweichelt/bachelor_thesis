@@ -209,5 +209,5 @@ class CoreComputer:
                 satisfiable_subsets.append(subset)
                 continue
 
-        time.sleep(10)
+        # time.sleep(10)
         return minimal_cores

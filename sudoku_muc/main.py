@@ -225,12 +225,26 @@ if __name__ == '__main__':
     }
     assumptions = {(clingo.parse_term(string), True) for string in assumptions}
 
+    # assumptions = {
+    #     (clingo.parse_term("a"), False),
+    #     (clingo.parse_term("b"), True),
+    #     (clingo.parse_term("c"), True),
+    # }
+
     directory = "res/examples/sudoku/sudoku_multi_combined"
+    # directory = "res/examples/abstract_non_monotonic_problem"
     cc = api.CoreComputer(
         encoding_paths=[f"{directory}/encoding.lp", f"{directory}/extras.lp"],
+        # encoding_paths=[f"{directory}/encoding.lp"],
         assumptions=assumptions
     )
-    res = cc.compute_minimal(multiple=True, timeout=1, max_amount=None)
+
+    # sat, model, core = cc._solve()
+    # print(sat)
+    # print([str(a) for a in model])
+
+
+    res = cc.compute_minimal(multiple=True, timeout=1, max_amount=2)
     print(type(res))
     if res is not None:
         print([[str(a) for a, _ in core] for core in res])
