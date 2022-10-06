@@ -3,6 +3,8 @@ import random
 import json
 import time
 import signal
+import scipy
+import math
 from abc import ABC, abstractmethod
 from itertools import chain, combinations
 
@@ -563,6 +565,120 @@ class Container:
                 satisfiable_subsets.append(subset)
                 if verbose > 0:
                     print("FOUND SAT :", [str(a) for a in subset], "size :", len(subset))
+
+        return minimal_cores
+
+    def get_all_minimal_uc_iterative_deletion_oracle(self, verbose=0):
+        # STOPPING AFTER FIRST LAYER WITH ONLY SKIPPABLE OR SAT SUBSETS IS CLEARED
+
+        satisfiable, _, _ = self.solve(different_assumptions=[])
+        if not satisfiable:
+            # raise error if the encoding instance isn't satisfiable without assumptions
+            raise RuntimeError("The encoding for this container isn't satisfiable on it's own")
+
+        # check if the encoding with all the assumptions is unsatisfiable
+        satisfiable, _, core = self.solve()
+        if satisfiable:
+            # return empty list if the encoding is already satisfiable with the assumptions
+            return []
+
+        assumption_set = list(self.assumptions)
+
+        # --- BOILER PLATE
+
+        # TODO : Attention the consts don't work properly for bigger problems!!!
+
+        oracle_control = clingo.Control()
+        # defining the amount of assumptions
+        oracle_program_string = f"#const n_assumptions={len(assumption_set)}.\n"
+        # defining the maximal amount of cores contained
+        oracle_program_string += f"#const max_cores={int(scipy.special.binom(len(assumption_set), math.floor(len(assumption_set) / 2)))}.\n"
+        # defining the maximal amount of satisfiable subsets
+        oracle_program_string += f"#const max_sat={2**len(assumption_set)}.\n"
+        # reading in the program encoding
+        oracle_program_string += Util.read_in_asp_file("res/find_valid_subset.lp")
+
+        print("MAX-CORES :", int(scipy.special.binom(len(assumption_set), math.floor(len(assumption_set) / 2))))
+        print("MAX-SAT :", 2**len(assumption_set))
+
+        if verbose > 1:
+            print(oracle_program_string)
+
+        oracle_control.add("base", [], oracle_program_string)
+        print(f"START GROUNDING ({len(assumption_set)} assumptions)")
+        oracle_control.ground([("base", [])])
+        print("END GROUNDING")
+
+        minimal_cores = []
+        sat_subsets = []
+
+        first_minimal_core = self.get_any_minimal_uc_iterative_deletion_improved()
+        minimal_cores.append(first_minimal_core)
+
+        selection_size = len(assumption_set) - 1
+
+        if verbose > 0:
+            print(assumption_set)
+
+        while selection_size > 0:
+            # reset oracle_assumptions to empty list with only current selection size
+            oracle_assumptions = [clingo.parse_term(f"selection_size({selection_size})")]
+            core_assumption_count = 0
+            # for each minimal core add a literal for each assumption to oracle_assumptions and count
+            for i, muc in enumerate(minimal_cores):
+                for assumption in muc:
+                    oracle_assumptions.append(clingo.parse_term(f"minimal_core({i + 1}, assumption({assumption_set.index(assumption) + 1}))"))
+                    core_assumption_count += 1
+            # add assumption that fixes the core assumptions to the ones passed as assumptions
+            oracle_assumptions.append(clingo.parse_term(f"core_assumptions({core_assumption_count})"))
+
+            sat_assumption_count = 0
+            # for each satisfiable subset add a literal for each assumption to oracle_assumptions and count
+            for i, sat in enumerate(sat_subsets):
+                for assumption in sat:
+                    oracle_assumptions.append(clingo.parse_term(f"sat_subset({i + 1}, assumption({assumption_set.index(assumption) + 1}))"))
+                    sat_assumption_count += 1
+            # add assumption that fixes the core assumptions to the ones passed as assumptions
+            oracle_assumptions.append(clingo.parse_term(f"sat_assumptions({sat_assumption_count})"))
+
+            # prepare assumptions as tuples
+            oracle_assumptions_prepared = [(a, True) for a in oracle_assumptions]
+
+            if verbose > 0:
+                print([str(a) for a in oracle_assumptions])
+
+            # solve to find the next unskippable subset
+            with oracle_control.solve(assumptions=oracle_assumptions_prepared, yield_=True) as solve_handle:
+                satisfiable = solve_handle.get().satisfiable
+                if solve_handle.model() is not None:
+                    # filter out all atoms from the model that are not 'selected'
+                    model = [atom for atom in solve_handle.model().symbols(atoms=True) if atom.match("selected", 1, True)]
+                else:
+                    model = []
+
+            if verbose > 0:
+                print(["UNSAT", "SAT"][satisfiable], [str(a) for a in model])
+            if not satisfiable:
+                if verbose > 0:
+                    print(f"NO VALID SUBSETS OF SIZE {selection_size} LEFT")
+                selection_size -= 1
+            else:
+                assumption_indices = [int(str(a)[:-1].replace("selected(assumption", "")[1:-1]) - 1 for a in model]
+                next_subset = [assumption_set[i] for i in assumption_indices]
+                if verbose > 0:
+                    print("NEXT SUBSET :", assumption_indices, [str(a) for a in next_subset])
+
+                muc = self.get_any_minimal_uc_iterative_deletion_improved(different_assumptions=next_subset)
+                if muc:
+                    minimal_cores.append(muc)
+                    if verbose > 0:
+                        print("MUC FOUND :", [str(a) for a in muc])
+                else:
+                    sat_subsets.append(next_subset)
+                    if verbose > 0:
+                        print("SAT FOUND :", [str(a) for a in next_subset])
+
+        # ---
 
         return minimal_cores
 
