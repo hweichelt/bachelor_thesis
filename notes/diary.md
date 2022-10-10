@@ -1,6 +1,32 @@
 # Working-Diary
 
 ***
+`10.10.2022` : Montag
+
++ Draft for a Formal description of a minimal unsatisfiable core for assumptions:
+
+Considering an unsatisfiable set of assumptions for Program $\Pi$ of the Form :
+
+$\text{AS} = \{(a_1, x_1), ..., (a_n, x_n)\}$
++ where $a_i$ is an atom of Program $\Pi$ (that doesn't yet have a clearly assigned truth value)
++ and $x_i \in \{true, false\}$
+
+So that $\text{solve(}\Pi, \text{AS})$ is `UNSAT`
+
+$\text{MUC}$ is now a **Minimal Unsatisfiable Core** of $\text{AS}$ if these four conditions hold :
+
++ $\text{MUC} \subseteq \text{AS}$ 
+	+ $\text{MUC}$ is a set of assumptions, that is subset of the assumption set 
++ $\text{solve}(\Pi, \text{MUC})$ is `UNSAT`
+	+ When the program $\Pi$ is solved for with $\text{MUC}$ as assumptions, it's always `UNSAT`
++  $\forall A \in \text{MUC} : \text{solve}(\Pi, {MUC}\setminus A)$ is `SAT`
+	+ If any of the $\text{MUC}$ members is removed, it becomes `SAT`
++ $\forall S \subseteq \text{AS} | \text{MUC} \subseteq S$ : $\text{solve}(\Pi, \text{S})$ is `UNSAT` 
+	+ For any superset of $\text{MUC}$, that is also subset of $\text{AS}$, it holds that solving for returns `UNSAT` 
+	+ This condition is here to define the characteristic of an $\text{MUC}$ and thereby also ensures his monotonicity
+
+
+***
 `28.09.2022` : Mittwoch
 
 + TODOs:
