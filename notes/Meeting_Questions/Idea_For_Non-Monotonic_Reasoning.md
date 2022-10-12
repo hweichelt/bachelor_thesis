@@ -44,3 +44,30 @@ This in contrast to the abstract example above which would only add the $\{a,b,\
 So in my opinion when we are only looking for minimal cores that are contained in the assumption set we can skip over all subsets of an already found satisfiable set.
 
 I'm not really sure if I got the concept of non-monotonic reasoning in this context right. Please let me know if there's a misunderstanding on my side or if there are any holes in my reasoning (Which is very well possible) :)
+
+
+***
+
+Are cores becoming monotonic this way?
+
+Example Task :
+
++ For assumption based MUCs, construct an instance where :
++ Assumption set : $\text{AS} = \{(a,true),(b,true),(c,true),(d,true)\}$
+	+ $\{(a,true),(b,true),(c,true),(d,true)\}$ is `UNSAT`
+	+ $\{(a,true),(b,true),(c,true)\}$ is `SAT`
+	+ $\{(a,true),(b,true)\}$ is `UNSAT` 
++ Such that $\{(a,true),(b,true)\}$ is a MUC
+
+$\to$ We know that when $\{(a,true),(b,true)\}$ is `UNSAT` for $\Pi$, there's no assignment for the other atoms, that would've made it `SAT`
++ So we already know that the above scenario is impossible
+
++  This way we can ensure that for finding minimal cores in sets of assumptions, monotonicity is given?
+
+***
+
+The same should hold for a negative instance :
++ Assumption set : $\text{AS} = \{(a,false),(b,false),(c,false),(d,false)\}$
+	+ $\{(a,false),(b,false),(c,false),(d,false)\}$ is `UNSAT`
+	+ $\{(a,false),(b,false),(c,false)\}$ is `SAT`
+	+ $\{(a,false),(b,false)\}$ is `UNSAT` 
