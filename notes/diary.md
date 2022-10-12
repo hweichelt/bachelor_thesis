@@ -25,7 +25,6 @@ $\text{MUC}$ is now a **Minimal Unsatisfiable Core** of $\text{AS}$ if these fou
 	+ For any superset of $\text{MUC}$, that is also subset of $\text{AS}$, it holds that solving for returns `UNSAT` 
 	+ This condition is here to define the characteristic of an $\text{MUC}$ and thereby also ensures his monotonicity
 
-
 ***
 `28.09.2022` : Mittwoch
 
