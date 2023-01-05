@@ -1,0 +1,2 @@
+selected(1,5) selected(1,6) selected(2,2) selected(2,4) selected(2,5) selected(3,2) selected(3,4) selected(3,8) selected(3,9) selected(4,1) selected(5,2) selected(5,5) selected(5,7) selected(5,8) selected(5,9) selected(6,6) selected(6,7) selected(6,8) selected(6,9) selected(7,2) selected(7,3) selected(8,10) selected(9,3) selected(9,4) selected(9,5) selected(9,7) selected(9,8) selected(10,3) selected(10,4) selected(10,6)
+
