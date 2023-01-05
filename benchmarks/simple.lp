@@ -1,13 +1,10 @@
-#const n_assumptions=10.
-#const n_mucs=50.
+#const n_assumptions=100.
+#const n_mucs=100.
 
-#const max_muc_size=10.
-#const min_muc_size=1.
+#const max_muc_size=98.
+#const min_muc_size=3.
 
-#const mucs_per_size=10.
-
-% #const max_muc_size=16.
-% #const min_muc_size=4.
+#const mucs_per_size=40.
 
 a(1..n_assumptions).
 c(1..n_mucs).
