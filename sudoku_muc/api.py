@@ -20,9 +20,10 @@ from warnings import warn
 UnsatisfiableCore = set[clingo.Symbol]
 UnsatisfiableCoreCollection = list[UnsatisfiableCore]
 
-# TODO : Is it good style to set the type hint of a parameter to for example int and then its default value to None?
 # TODO : Nice to haves :
 #  + Assume all literals of a certain signature (list of signatures) [ ]
+#   + Could be achieved through a first grounding step and then taking all grounded symbols of the signature and adding
+#     Them as choice rules
 #  + Just assume given assumptions an nothing else (already implemented) [X]
 
 
@@ -139,7 +140,6 @@ class CoreComputer:
         with self.control.solve(assumptions=assumption_list, yield_=True) as solve_handle:
             satisfiable = solve_handle.get().satisfiable
             if solve_handle.model() is not None:
-                # filter out all atoms from the model that are not in shown_atoms
                 model = solve_handle.model().symbols(atoms=True)
             else:
                 model = []
@@ -156,7 +156,7 @@ class CoreComputer:
             if satisfiable:
                 raise AssumptionsSatisfiableException("The encoding with `_different_assumptions` isn't unsatisfiable")
 
-        # use container assumptions by default or different_assumptions
+        # use object assumptions by default or `_different_assumptions`
         assumption_set = _different_assumptions if _different_assumptions is not None else self.assumptions
         working_set = set(assumption_set)
         probe_set = set()
@@ -209,5 +209,98 @@ class CoreComputer:
                 satisfiable_subsets.append(subset)
                 continue
 
-        # time.sleep(10)
         return minimal_cores
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+class CoreComputerBruteForce(CoreComputer):
+
+    def __int__(self, encoding_paths: list[str], assumptions: set[(clingo.Symbol, bool)], custom_control: clingo.Control = None):
+        super(CoreComputerBruteForce, self).__init__(encoding_paths, assumptions, custom_control)
+
+    def _compute_any_minimal_core(self, _different_assumptions: set[(clingo.Symbol, bool)] = None) -> UnsatisfiableCore:
+        # BRUTE FORCE ANY MUC ALGORITHM
+        # check for `different_assumptions` if the encoding is unsatisfiable, else return None
+        if _different_assumptions is not None:
+            satisfiable, _, core = self._solve(_different_assumptions=_different_assumptions)
+            if satisfiable:
+                raise AssumptionsSatisfiableException("The encoding with `_different_assumptions` isn't unsatisfiable")
+
+        # use object assumptions by default or `_different_assumptions`
+        assumption_set = _different_assumptions if _different_assumptions is not None else self.assumptions
+        powerset = chain.from_iterable(combinations(assumption_set, r) for r in range(len(assumption_set) + 1))
+
+        for s in powerset:
+            subset = set(s)
+            sat, _, _ = self._solve(_different_assumptions=subset)
+            if not sat:
+                # this has to be the case at some point (at least when checking the whole assumption set in the end)
+                return subset
+
+    def _compute_multiple_minimal_cores(self, max_amount: int = None, result_backup: list[set[clingo.Symbol]] = None) -> UnsatisfiableCoreCollection:
+        # BRUTE FORCE ALL MUC ALGORITHM
+        # use object assumptions
+        assumption_set = self.assumptions
+        minimal_unsatisfiable_cores = []
+        powerset = chain.from_iterable(combinations(assumption_set, r) for r in range(len(assumption_set) + 1))
+
+        curr_len = 0
+        for s in powerset:
+            subset = set(s)
+            if len(subset) > curr_len:
+                curr_len = len(subset)
+                print(curr_len)
+            sat, _, _ = self._solve(_different_assumptions=subset)
+            if not sat and not any([muc.issubset(subset) for muc in minimal_unsatisfiable_cores]):
+                minimal_unsatisfiable_cores.append(subset)
+                result_backup.append(subset)
+
+        return minimal_unsatisfiable_cores
+
+
+class CoreComputerBruteForceImproved(CoreComputer):
+
+    def __int__(self, encoding_paths: list[str], assumptions: set[(clingo.Symbol, bool)], custom_control: clingo.Control = None):
+        super(CoreComputerBruteForceImproved, self).__init__(encoding_paths, assumptions, custom_control)
+
+    def _compute_any_minimal_core(self, _different_assumptions: set[(clingo.Symbol, bool)] = None) -> UnsatisfiableCore:
+        # BRUTE FORCE ANY MUC ALGORITHM
+        # check for `different_assumptions` if the encoding is unsatisfiable, else return None
+        if _different_assumptions is not None:
+            satisfiable, _, core = self._solve(_different_assumptions=_different_assumptions)
+            if satisfiable:
+                raise AssumptionsSatisfiableException("The encoding with `_different_assumptions` isn't unsatisfiable")
+
+        # use object assumptions by default or `_different_assumptions`
+        assumption_set = _different_assumptions if _different_assumptions is not None else self.assumptions
+        powerset = chain.from_iterable(combinations(assumption_set, r) for r in range(len(assumption_set) + 1))
+
+        for s in powerset:
+            subset = set(s)
+            sat, _, _ = self._solve(_different_assumptions=subset)
+            if not sat:
+                # this has to be the case at some point (at least when checking the whole assumption set in the end)
+                return subset
+
+    def _compute_multiple_minimal_cores(self, max_amount: int = None, result_backup: list[set[clingo.Symbol]] = None) -> UnsatisfiableCoreCollection:
+        # IMPROVED BRUTE FORCE ALL MUC ALGORITHM
+        # use object assumptions
+        assumption_set = self.assumptions
+        minimal_unsatisfiable_cores = []
+        powerset = chain.from_iterable(combinations(assumption_set, r) for r in range(len(assumption_set) + 1))
+
+        curr_len = 0
+        for s in powerset:
+            subset = set(s)
+            if any([muc.issubset(subset) for muc in minimal_unsatisfiable_cores]):
+                continue
+            if len(subset) > curr_len:
+                curr_len = len(subset)
+                print(curr_len)
+            sat, _, _ = self._solve(_different_assumptions=subset)
+            if not sat and not any([muc.issubset(subset) for muc in minimal_unsatisfiable_cores]):
+                minimal_unsatisfiable_cores.append(subset)
+                result_backup.append(subset)
+
+        return minimal_unsatisfiable_cores
