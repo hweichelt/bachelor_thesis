@@ -1,0 +1,10 @@
+assume(a(1)).
+assume(a(2)).
+assume(a(3)).
+assume(a(4)).
+assume(a(5)).
+assume(a(6)).
+assume(a(7)).
+assume(a(8)).
+assume(a(9)).
+assume(a(10)).
