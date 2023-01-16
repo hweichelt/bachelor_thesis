@@ -27,11 +27,6 @@ UnsatisfiableCoreCollection = list[UnsatisfiableCore]
 #  + Just assume given assumptions an nothing else (already implemented) [X]
 
 
-class TimeoutException(Exception):
-    def __init__(self, message):
-        super(TimeoutException, self).__init__(message)
-
-
 class EncodingUnsatisfiableException(Exception):
     def __init__(self, message):
         super(EncodingUnsatisfiableException, self).__init__(message)
@@ -46,11 +41,12 @@ class Util:
 
     @staticmethod
     def timeout_handler(signum, frame):
-        raise TimeoutException("Out of time!")
+        raise TimeoutError("took too long!")
 
     @staticmethod
     def function_with_timeout(function: Callable, args: list = None, kwargs: dict = None, timeout: int = None):
-        signal.signal(signal.SIGALRM, Util.timeout_handler)
+        if timeout is not None:
+            signal.signal(signal.SIGALRM, Util.timeout_handler)
 
         if args is None:
             args = []
@@ -68,8 +64,8 @@ class Util:
             if timeout is not None:
                 signal.alarm(0)
             return result
-        except TimeoutException:
-            print("TIMEOUT")
+        except:
+            print("TimeoutError was caught")
             # return None if a timeout occurred
             return None
 
@@ -122,7 +118,7 @@ class CoreComputer:
         )
 
         if result is None:
-            partial_result = kwargs["result_backup"]
+            partial_result = kwargs["result_backup"] if "result_backup" in kwargs else None
             warn("The timeout limit was reached and the search stopped. A partial result will be returned")
             return partial_result
 
