@@ -1,0 +1,2 @@
+algorithm,algorithm single muc,benchmark assumptions,benchmark mucs,number of mucs found,computation time,timeout occurred,everything found
+[Multi-MUC]_Brute_Force_Improved,False,50,10,0,300.0004133789989,True,False

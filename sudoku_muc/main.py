@@ -5,10 +5,10 @@ from itertools import combinations, chain
 
 import clingo
 
-import tests
 import api
 import signal
 from minimal_unsatisfiable_core import Util, Container, Test, TestAllContained, TestAnyContained
+from benchmarks import run_benchmarks
 
 TIMEOUT = 10
 
@@ -33,9 +33,23 @@ def muc_sudoku():
         "res/examples/sudoku/sudoku_multi_atomic",
         "res/examples/sudoku/sudoku_multi_combined",
     ]
+    benchmarks = [
+        "../benchmarks/10_assumptions/10_mucs",
+        "../benchmarks/10_assumptions/50_mucs",
+        "../benchmarks/10_assumptions/100_mucs",
+        "../benchmarks/50_assumptions/10_mucs",
+        "../benchmarks/50_assumptions/50_mucs",
+        "../benchmarks/50_assumptions/100_mucs",
+        "../benchmarks/100_assumptions/10_mucs",
+        "../benchmarks/100_assumptions/50_mucs",
+        "../benchmarks/100_assumptions/100_mucs",
+        "../benchmarks/10000_assumptions/10_mucs",
+        "../benchmarks/10000_assumptions/50_mucs",
+        "../benchmarks/10000_assumptions/100_mucs",
+    ]
     all_examples = abstract_examples + sudoku_examples
 
-    for example in single_example:
+    for example in benchmarks:
         print("\n" + "="*40, ">", example, "<", "="*40, "\n")
         muc_sudoku_on_example(example)
 
@@ -70,7 +84,7 @@ def muc_sudoku_on_example(example_directory):
     satisfiable, model, core = container_1.solve()
     print("result : ", ["UNSAT", "SAT"][satisfiable])
     print("model : ", model)
-    print("core : ", core)
+    print("core : ", core if len(str(core)) < 150 else str(core)[:150] + " [...]")
 
     results = Util.read_dictionary_from_file(f"{example_directory}/results.txt")
 
@@ -122,12 +136,12 @@ def muc_sudoku_on_example(example_directory):
     #     name="ALL MINIMAL UCS (Iterative Deletion STOPPING):"
     # )
 
-    print_test_results(
-        function=container_1.get_all_minimal_uc_iterative_deletion_oracle,
-        valid_data=results.get("minimal"),
-        test=TestAllContained(),
-        name="ALL MINIMAL UCS (Iterative Deletion ORACLE):"
-    )
+    # print_test_results(
+    #     function=container_1.get_all_minimal_uc_iterative_deletion_oracle,
+    #     valid_data=results.get("minimal"),
+    #     test=TestAllContained(),
+    #     name="ALL MINIMAL UCS (Iterative Deletion ORACLE):"
+    # )
 
     # res = container_1.get_all_minimal_uc_iterative_deletion_oracle()
     # print(res)
@@ -164,12 +178,12 @@ def muc_sudoku_on_example(example_directory):
     #     name="ANY MINIMAL UCS (Iterative Deletion):"
     # )
     #
-    # print_test_results(
-    #     function=container_1.get_any_minimal_uc_iterative_deletion_improved,
-    #     valid_data=results.get("minimal"),
-    #     test=TestAnyContained(),
-    #     name="ANY MINIMAL UCS (Iterative Deletion Improved):"
-    # )
+    print_test_results(
+        function=container_1.get_any_minimal_uc_iterative_deletion_improved,
+        valid_data=results.get("minimal"),
+        test=TestAnyContained(),
+        name="ANY MINIMAL UCS (Iterative Deletion Improved):"
+    )
 
     return
 
@@ -198,6 +212,7 @@ def muc_sudoku_on_example(example_directory):
 
 if __name__ == '__main__':
 
+    # muc_sudoku()
     # tests.subset_finder()
     # muc_sudoku()
     # tests.check_comparison()
@@ -207,23 +222,23 @@ if __name__ == '__main__':
     #
     # print(f"time={time_end - time_start}s")
     #
-    assumptions = {
-        "solution(4, 9, 3)",
-        "solution(7, 1, 9)",
-        "solution(2, 2, 7)",
-        "solution(4, 7, 7)",
-        "solution(3, 9, 7)",
-        "solution(8, 2, 8)",
-        "solution(1, 6, 8)",
-        "solution(6, 7, 8)",
-        "solution(2, 9, 8)",
-        "solution(5, 5, 7)",
-        "solution(1, 7, 6)",
-        "solution(9, 1, 7)",
-        "solution(2, 7, 4)",
-        "solution(9, 7, 4)",
-    }
-    assumptions = {(clingo.parse_term(string), True) for string in assumptions}
+    # assumptions = {
+    #     "solution(4, 9, 3)",
+    #     "solution(7, 1, 9)",
+    #     "solution(2, 2, 7)",
+    #     "solution(4, 7, 7)",
+    #     "solution(3, 9, 7)",
+    #     "solution(8, 2, 8)",
+    #     "solution(1, 6, 8)",
+    #     "solution(6, 7, 8)",
+    #     "solution(2, 9, 8)",
+    #     "solution(5, 5, 7)",
+    #     "solution(1, 7, 6)",
+    #     "solution(9, 1, 7)",
+    #     "solution(2, 7, 4)",
+    #     "solution(9, 7, 4)",
+    # }
+    # assumptions = {(clingo.parse_term(string), True) for string in assumptions}
 
     # assumptions = {
     #     (clingo.parse_term("a"), False),
@@ -231,24 +246,28 @@ if __name__ == '__main__':
     #     (clingo.parse_term("c"), True),
     # }
 
-    directory = "res/examples/sudoku/sudoku_multi_combined"
+    # directory = "res/examples/sudoku/sudoku_multi_combined"
     # directory = "res/examples/abstract_non_monotonic_problem"
-    cc = api.CoreComputer(
-        encoding_paths=[f"{directory}/encoding.lp", f"{directory}/extras.lp"],
-        # encoding_paths=[f"{directory}/encoding.lp"],
-        assumptions=assumptions
-    )
+    # cc = api.CoreComputer(
+    #     encoding_paths=[f"{directory}/encoding.lp", f"{directory}/extras.lp"],
+    #     # encoding_paths=[f"{directory}/encoding.lp"],
+    #     assumptions=assumptions
+    # )
 
     # sat, model, core = cc._solve()
     # print(sat)
     # print([str(a) for a in model])
 
 
-    res = cc.compute_minimal(multiple=True, timeout=1, max_amount=2)
-    print(type(res))
-    if res is not None:
-        print([[str(a) for a, _ in core] for core in res])
+    # res = cc.compute_minimal(multiple=True, timeout=1, max_amount=2)
+    # print(type(res))
+    # if res is not None:
+    #     print([[str(a) for a, _ in core] for core in res])
 
     # TODO : Why the double true for assumptions?
     # tests.bit_array_test()
     # tests.not_vs_without_2()
+
+    # ----------
+
+    run_benchmarks.run_benchmarks()
