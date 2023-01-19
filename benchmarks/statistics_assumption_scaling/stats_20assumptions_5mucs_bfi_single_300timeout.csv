@@ -1,0 +1,2 @@
+algorithm,algorithm single muc,benchmark assumptions,benchmark mucs,number of mucs found,computation time,timeout occurred,everything found
+bfi_single,True,20,5,1,0.13462766699922213,False,False

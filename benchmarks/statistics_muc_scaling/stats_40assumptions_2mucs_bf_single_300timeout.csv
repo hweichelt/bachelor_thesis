@@ -1,0 +1,2 @@
+algorithm,algorithm single muc,benchmark assumptions,benchmark mucs,number of mucs found,computation time,timeout occurred,everything found
+bf_single,True,40,2,1,0.008716889000424999,False,False

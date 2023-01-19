@@ -27,6 +27,62 @@ BENCHMARK_DIRS = [
     "10000_assumptions/100_mucs",
 ]
 
+# ASSUMPTION SCALING BENCHMARKS
+BENCHMARK_DIRS = [
+    "../benchmarks_2/assumption_scaling/10_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/20_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/30_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/40_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/50_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/60_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/70_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/80_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/90_assumptions/5_mucs",
+    "../benchmarks_2/assumption_scaling/100_assumptions/5_mucs",
+]
+
+# MUC SCALING BENCHMARKS
+BENCHMARK_DIRS = [
+    "../benchmarks_2/muc_scaling/40_assumptions/1_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/2_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/3_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/4_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/5_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/6_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/7_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/8_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/9_mucs",
+    "../benchmarks_2/muc_scaling/40_assumptions/10_mucs",
+]
+
+# ID ASSUMPTION SCALING BENCHMARKS
+BENCHMARK_DIRS = [
+    "../benchmarks_2/id_assumption_scaling/100_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/200_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/300_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/400_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/500_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/600_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/700_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/800_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/900_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/1000_assumptions/10_mucs",
+]
+
+# ID MUC SCALING BIG BENCHMARKS
+BENCHMARK_DIRS = [
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/50_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/100_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/150_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/200_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/250_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/300_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/350_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/400_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/450_mucs",
+    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/500_mucs",
+]
+
 STATS_COLUMNS = {
     "algorithm": str,
     "algorithm single muc": bool,
@@ -45,36 +101,36 @@ ALGORITHMS = [
         "single_muc": True,
         "core_computer": api.CoreComputer,
     },
-    {
-        "name": "[Single-MUC]_Brute_Force",
-        "slug": "bf_single",
-        "single_muc": True,
-        "core_computer": api.CoreComputerBruteForce,
-    },
-    {
-        "name": "[Single-MUC]_Brute_Force_Improved",
-        "slug": "bfi_single",
-        "single_muc": True,
-        "core_computer": api.CoreComputerBruteForceImproved,
-    },
-    {
-        "name": "[Multi-MUC]_Iterative_Deletion",
-        "slug": "id_multi",
-        "single_muc": False,
-        "core_computer": api.CoreComputer,
-    },
-    {
-        "name": "[Multi-MUC]_Brute_Force",
-        "slug": "bf_multi",
-        "single_muc": False,
-        "core_computer": api.CoreComputerBruteForce,
-    },
-    {
-        "name": "[Multi-MUC]_Brute_Force_Improved",
-        "slug": "bfi_multi",
-        "single_muc": False,
-        "core_computer": api.CoreComputerBruteForceImproved,
-    },
+    # {
+    #     "name": "[Single-MUC]_Brute_Force",
+    #     "slug": "bf_single",
+    #     "single_muc": True,
+    #     "core_computer": api.CoreComputerBruteForce,
+    # },
+    # {
+    #     "name": "[Single-MUC]_Brute_Force_Improved",
+    #     "slug": "bfi_single",
+    #     "single_muc": True,
+    #     "core_computer": api.CoreComputerBruteForceImproved,
+    # },
+    # {
+    #     "name": "[Multi-MUC]_Iterative_Deletion",
+    #     "slug": "id_multi",
+    #     "single_muc": False,
+    #     "core_computer": api.CoreComputer,
+    # },
+    # {
+    #     "name": "[Multi-MUC]_Brute_Force",
+    #     "slug": "bf_multi",
+    #     "single_muc": False,
+    #     "core_computer": api.CoreComputerBruteForce,
+    # },
+    # {
+    #     "name": "[Multi-MUC]_Brute_Force_Improved",
+    #     "slug": "bfi_multi",
+    #     "single_muc": False,
+    #     "core_computer": api.CoreComputerBruteForceImproved,
+    # },
 ]
 
 TIMEOUT = 300
@@ -94,7 +150,7 @@ def evaluate_results(stats_df, results, bench_dir, n_assumptions, n_mucs, result
           [[str(a) for a, _ in muc] for muc in results] if results_iterable else "NO RESULT FOUND")
 
     stats_data = [
-        algorithm["name"],  # algorithm name
+        algorithm["slug"],  # algorithm name
         algorithm["single_muc"],  # algorithm single muc
         n_assumptions,  # benchmark assumptions
         n_mucs,  # benchmark mucs
@@ -113,6 +169,8 @@ def evaluate_results(stats_df, results, bench_dir, n_assumptions, n_mucs, result
 def run_benchmarks(override_results=False):
     for algorithm in ALGORITHMS:
         statistics_dir = Path(__file__).parent.absolute().joinpath("statistics/")
+        if not os.path.isdir(statistics_dir):
+            os.mkdir(statistics_dir)
 
         for b, bench_dir in enumerate(BENCHMARK_DIRS):
             stats = pd.DataFrame(columns=list(STATS_COLUMNS.keys()))
@@ -137,7 +195,7 @@ def run_benchmarks(override_results=False):
                 assumptions=assumptions,
             )
             start_t = time.perf_counter()
-            results = cc.compute_minimal(multiple=not algorithm["single_muc"], timeout=TIMEOUT)
+            results = cc.compute_minimal(multiple=not algorithm["single_muc"], timeout=TIMEOUT, max_amount=n_mucs)
             end_t = time.perf_counter()
 
             results_computation_time = end_t - start_t

@@ -1,0 +1,2 @@
+algorithm,algorithm single muc,benchmark assumptions,benchmark mucs,number of mucs found,computation time,timeout occurred,everything found
+[Multi-MUC]_Iterative_Deletion,False,50,100,100,6.032847701999344,False,True
