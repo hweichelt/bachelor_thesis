@@ -57,31 +57,31 @@ BENCHMARK_DIRS = [
 
 # ID ASSUMPTION SCALING BENCHMARKS
 BENCHMARK_DIRS = [
-    "../benchmarks_2/id_assumption_scaling/100_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/200_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/300_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/400_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/500_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/600_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/700_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/800_assumptions/10_mucs",
-    "../benchmarks_2/id_assumption_scaling/900_assumptions/10_mucs",
     "../benchmarks_2/id_assumption_scaling/1000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/2000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/3000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/4000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/5000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/6000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/7000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/8000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/9000_assumptions/10_mucs",
+    "../benchmarks_2/id_assumption_scaling/10000_assumptions/10_mucs",
 ]
 
-# ID MUC SCALING BIG BENCHMARKS
-BENCHMARK_DIRS = [
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/50_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/100_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/150_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/200_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/250_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/300_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/350_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/400_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/450_mucs",
-    "../benchmarks_2/id_muc_scaling_big/10000_assumptions/500_mucs",
-]
+# # ID MUC SCALING BIG BENCHMARKS
+# BENCHMARK_DIRS = [
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/50_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/100_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/150_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/200_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/250_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/300_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/350_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/400_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/450_mucs",
+#     "../benchmarks_2/id_muc_scaling_big/10000_assumptions/500_mucs",
+# ]
 
 STATS_COLUMNS = {
     "algorithm": str,
