@@ -8,7 +8,7 @@ import clingo
 import api
 import signal
 from minimal_unsatisfiable_core import Util, Container, Test, TestAllContained, TestAnyContained
-from benchmarks import run_benchmarks
+from benchmarks_old import run_benchmarks
 
 TIMEOUT = 10
 

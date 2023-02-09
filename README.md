@@ -11,7 +11,7 @@ Bachelor thesis about exploring ways of finding minimal unsatisfiable cores for 
 2. [ASP Approach](asp_approach/)
     + First approach to the MUC problem in ASP
     + Not general yet and missing functionality
-3. [Benchmarks](benchmarks/)
+3. [Benchmarks](benchmarks_old/)
 4. [API](sudoku_muc/api.py)
 5. [Closely related Papers](papers/)
 6. [My Bachelor Thesis](https://www.overleaf.com/read/ztcjbrpyjzxs)
