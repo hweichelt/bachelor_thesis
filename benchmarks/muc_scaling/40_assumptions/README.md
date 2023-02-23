@@ -1,5 +1,7 @@
 # Random MUC Benchmarks [40 Assumptions]
 
+For this benchmark's subdirectories the `n_mucs` stands for a MUC-Size of $n$.
+
 ## 1 : MUC-Size 1
 
 ![](1_mucs/visualization.jpeg)
