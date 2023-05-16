@@ -84,6 +84,19 @@ BENCHMARK_DIRS = [
     "../benchmarks_2/assumption_scaling_id/10000_assumptions/10_mucs",
 ]
 
+# PRESENTATION BENCHMARKS
+BENCHMARK_DIRS = [
+    "../benchmarks_presentation/normal/25_assumptions/5_mucs",
+    "../benchmarks_presentation/normal/50_assumptions/10_mucs",
+    "../benchmarks_presentation/normal/50_assumptions/20_mucs",
+    "../benchmarks_presentation/normal/50_assumptions/30_mucs",
+    "../benchmarks_presentation/normal/50_assumptions/40_mucs",
+    "../benchmarks_presentation/normal/75_assumptions/5_mucs",
+    "../benchmarks_presentation/normal/100_assumptions/5_mucs",
+    "../benchmarks_presentation/normal/1000_assumptions/5_mucs",
+    "../benchmarks_presentation/normal/10000_assumptions/5_mucs",
+]
+
 STATS_COLUMNS = {
     "algorithm": str,
     "algorithm single muc": bool,
@@ -114,18 +127,18 @@ ALGORITHMS = [
     #     "single_muc": True,
     #     "core_computer": api.CoreComputerBruteForceImproved,
     # },
-    {
-        "name": "[Multi-MUC]_Iterative_Deletion",
-        "slug": "id_multi",
-        "single_muc": False,
-        "core_computer": api.CoreComputer,
-    },
     # {
-    #     "name": "[Multi-MUC]_Brute_Force",
-    #     "slug": "bf_multi",
+    #     "name": "[Multi-MUC]_Iterative_Deletion",
+    #     "slug": "id_multi",
     #     "single_muc": False,
-    #     "core_computer": api.CoreComputerBruteForce,
+    #     "core_computer": api.CoreComputer,
     # },
+    {
+        "name": "[Multi-MUC]_Brute_Force",
+        "slug": "bf_multi",
+        "single_muc": False,
+        "core_computer": api.CoreComputerBruteForce,
+    },
     # {
     #     "name": "[Multi-MUC]_Brute_Force_Improved",
     #     "slug": "bfi_multi",
